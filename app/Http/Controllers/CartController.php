@@ -110,13 +110,21 @@ class CartController extends Controller
 
             if($product->wholesale_product){
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
+                $max_qty = $product_stock->wholesalePrices->max('max_qty');
+
                 if($wholesalePrice){
                     $price = $wholesalePrice->price;
-                }
+                }else{
+                    $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
+                    $price = $wholesalePrice->price;
+                }  
             }
 
             $quantity = $product_stock->qty;
             
+            if($product->wholesale_product){
+                $quantity = 1000000000;
+            }
             if($quantity < $request['quantity']) {
                 return array(
                     'status' => 0,
@@ -190,6 +198,9 @@ class CartController extends Controller
                     if($cartItem['product_id'] == $request->id) {
                         $product_stock = $cart_product->stocks->where('variant', $str)->first();
                         $quantity = $product_stock->qty;
+                        if($product->wholesale_product){
+                            $quantity = 1000000000;
+                        }
                         if($quantity < $cartItem['quantity'] + $request['quantity']){
                             return array(
                                 'status' => 0,
@@ -307,7 +318,9 @@ class CartController extends Controller
             $product_stock = $product->stocks->where('variant', $cartItem['variation'])->first();
             $quantity = $product_stock->qty;
             $price = $product_stock->price;
-			
+			if($product->wholesale_product){
+                $quantity = 1000000000;
+            }
 			//discount calculation
             $discount_applicable = false;
 
@@ -336,10 +349,22 @@ class CartController extends Controller
 
             if($product->wholesale_product){
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
+                $max_qty = $product_stock->wholesalePrices->max('max_qty');
+
                 if($wholesalePrice){
                     $price = $wholesalePrice->price;
-                }
+                }else{
+                    $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
+                    $price = $wholesalePrice->price;
+                }  
             }
+
+            // if($product->wholesale_product){
+            //     $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
+            //     if($wholesalePrice){
+            //         $price = $wholesalePrice->price;
+            //     }
+            // }
 
             $cartItem['price'] = $price;
             $cartItem->save();

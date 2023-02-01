@@ -157,11 +157,17 @@
                                             <th>{{ translate('Unit Price') }}</th>
                                         </tr>
                                     </thead>
+                                    @php
+                                        $wholesalePrices = $detailedProduct->stocks->first()->wholesalePrices;
+                                        $max_qty = $wholesalePrices->max('max_qty');
+                                    @endphp
                                     <tbody>
                                         @foreach ($detailedProduct->stocks->first()->wholesalePrices as $wholesalePrice)
                                             <tr>
                                                 <td>{{ $wholesalePrice->min_qty }}</td>
-                                                <td>{{ $wholesalePrice->max_qty }}</td>
+                                                <td>{{ 
+                                                $wholesalePrice->max_qty == $max_qty ? $wholesalePrice->max_qty .' =< ' :$wholesalePrice->max_qty
+                                                }}</td>
                                                 <td>{{ single_price($wholesalePrice->price) }}</td>
                                             </tr>
                                         @endforeach
@@ -313,7 +319,7 @@
                                                 <input type="number" name="quantity"
                                                     class="col border-0 text-center flex-grow-1 fs-16 input-number"
                                                     placeholder="1" value="{{ $detailedProduct->min_qty }}"
-                                                    min="{{ $detailedProduct->min_qty }}" max="10"
+                                                    min="{{ $detailedProduct->min_qty }}" 
                                                     lang="en">
                                                 <button class="btn  col-auto btn-icon btn-sm btn-circle btn-light"
                                                     type="button" data-type="plus" data-field="quantity">
@@ -326,6 +332,7 @@
                                                     $qty += $stock->qty;
                                                 }
                                             @endphp
+                                            @if (!$detailedProduct->wholesale_product)
                                             <div class="avialable-amount opacity-60">
                                                 @if ($detailedProduct->stock_visibility_state == 'quantity')
                                                     (<span id="available-quantity">{{ $qty }}</span>
@@ -334,6 +341,7 @@
                                                     (<span id="available-quantity">{{ translate('In Stock') }}</span>)
                                                 @endif
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -349,6 +357,9 @@
                                             <strong id="chosen_price" class="h4 fw-600 text-primary">
 
                                             </strong>
+                                            <span class="avialable-amount opacity-60">
+                                                ({{ translate('Tax included') }})
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

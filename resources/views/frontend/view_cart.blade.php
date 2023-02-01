@@ -100,7 +100,7 @@
                                                         class="fw-600 fs-16">{{ cart_product_tax($cartItem, $product) }}</span>
                                                 </div>
 
-                                                <div class="col-lg col-6 order-4 order-lg-0">
+                                                <div class="col-lg-2 col-6 order-4 order-lg-0">
                                                     @if ($cartItem['digital'] != 1 && $product->auction_product == 0)
                                                         <div
                                                             class="row no-gutters align-items-center aiz-plus-minus mr-2 ml-0">
@@ -114,7 +114,7 @@
                                                                 class="col border-0 text-center flex-grow-1 fs-16 input-number"
                                                                 placeholder="1" value="{{ $cartItem['quantity'] }}"
                                                                 min="{{ $product->min_qty }}"
-                                                                max="{{ $product_stock->qty }}"
+                                                                max="{{ $product->wholesale_product ? 1000000000 : $product_stock->qty }}"
                                                                 onchange="updateQuantity({{ $cartItem['id'] }}, this)">
                                                             <button
                                                                 class="btn col-auto btn-icon btn-sm btn-circle btn-light"

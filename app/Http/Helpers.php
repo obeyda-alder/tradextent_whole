@@ -249,6 +249,18 @@ if (!function_exists('cart_product_price')) {
                 $price = $product_stock->price;
             }
 
+            // NOTE: wholesale_product
+            if ($product->wholesale_product) {
+                $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
+                $max_qty = $product_stock->wholesalePrices->max('max_qty');
+                if ($wholesalePrice) {
+                    $price = $wholesalePrice->price;
+                }else{
+                    $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
+                    $price = $wholesalePrice->price;
+                }
+            }
+
 
             //discount calculation
             $discount_applicable = false;

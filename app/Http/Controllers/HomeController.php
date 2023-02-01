@@ -353,13 +353,22 @@ class HomeController extends Controller
 
         if ($product->wholesale_product) {
             $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
+            $max_qty = $product_stock->wholesalePrices->max('max_qty');
             if ($wholesalePrice) {
+                $price = $wholesalePrice->price;
+            }else{
+                $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
                 $price = $wholesalePrice->price;
             }
         }
 
         $quantity = $product_stock->qty;
         $max_limit = $product_stock->qty;
+        
+        if ($product->wholesale_product) {
+            $quantity = 1000000000;
+            $max_limit = $quantity;
+        }
 
         if ($quantity >= 1 && $product->min_qty <= $quantity) {
             $in_stock = 1;
