@@ -226,8 +226,11 @@
                             <div class="col-md-6">
                                 <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Unit price') }}" name="unit_price" class="form-control" required>
                             </div>
+                            <span class="col-md-3" style="align-self: center;">
+                                {{get_system_default_currency()->name}}
+                                ({{get_system_default_currency()->symbol}})
+                            </span>
                         </div>
-
                         <div class="form-group row">
 	                        <label class="col-sm-3 control-label" for="start_date">{{translate('Discount Date Range')}}</label>
 	                        <div class="col-sm-9">

@@ -158,6 +158,10 @@
                             <div class="col-md-6">
                                 <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Unit price') }}" name="unit_price" class="form-control" required>
                             </div>
+                            <span class="col-md-3" style="align-self: center;">
+                                {{get_system_default_currency()->name}}
+                                ({{get_system_default_currency()->symbol}})
+                            </span>
                         </div>
 
                         @if(addon_is_activated('club_point'))
