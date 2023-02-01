@@ -71,6 +71,15 @@
                                                         {{ date("F j Y, g:i a", strtotime($notification->created_at)) }}
                                                     </small>
                                                 @endif
+                                                @if($notification->type == 'App\Notifications\SellerConfirmNotification')
+                                                    <p class="mb-1 text-truncate-2">
+                                                        {{-- TODO: add translate --}}
+                                                        {{translate('New Shop verfication request!')}}
+                                                    </p>
+                                                    <small class="text-muted">
+                                                        {{ date("F j Y, g:i a", strtotime($notification->created_at)) }}
+                                                    </small>
+                                                @endif
                                             </div>
                                         </div>
                                     </li>

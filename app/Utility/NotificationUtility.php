@@ -9,6 +9,7 @@ use App\Http\Controllers\OTPVerificationController;
 use Mail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderNotification;
+use App\Notifications\SellerConfirmNotification;
 use App\Models\FirebaseNotification;
 
 class NotificationUtility
@@ -51,6 +52,15 @@ class NotificationUtility
         }
     }
 
+    public static function sendSellerConfirmNotification($shop)
+    {        
+        $recivers = \App\Models\User::where('user_type', 'admin')->first()->id;
+        $users = User::findMany([$recivers]);
+        $order_notification = array();
+        $order_notification['shop_id'] = $shop->id;
+        Notification::send($users, new SellerConfirmNotification($order_notification));
+    }
+    
     public static function sendNotification($order, $order_status)
     {        
         if ($order->seller_id == \App\Models\User::where('user_type', 'admin')->first()->id) {

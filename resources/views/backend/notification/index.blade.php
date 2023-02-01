@@ -39,6 +39,23 @@
                                     </div>
                                 </li>
                             @endif
+                            @if($notification->type == 'App\Notifications\SellerConfirmNotification')
+                                <li class="list-group-item d-flex justify-content-between align-items- py-3">
+                                    <div class="media text-inherit">
+                                        <div class="media-body">
+                                            <p class="mb-1 text-truncate-2">
+                                                {{ translate('Shop verfication request') }}
+                                                <a href="{{route('sellers.show_verification_request', $notification->data['shop_id'])}}">
+                                                    {{translate('view request')}}
+                                                </a>
+                                            </p>
+                                            <small class="text-muted">
+                                                {{ date("F j Y, g:i a", strtotime($notification->created_at)) }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endif
 
                         @empty
                             <li class="list-group-item">

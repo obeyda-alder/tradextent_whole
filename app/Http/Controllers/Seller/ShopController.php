@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Models\BusinessSetting;
+use App\Utility\NotificationUtility;
+
 use Illuminate\Http\Request;
 use App\Models\Shop;
 use Auth;
@@ -102,6 +104,10 @@ class ShopController extends Controller
         $shop = Auth::user()->shop;
         $shop->verification_info = json_encode($data);
         if ($shop->save()) {
+            // TODO: make notification to the admin
+
+            NotificationUtility::sendSellerConfirmNotification($shop);
+
             flash(translate('Your shop verification request has been submitted successfully!'))->success();
             return redirect()->route('seller.dashboard');
         }
