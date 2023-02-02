@@ -89,10 +89,14 @@
                                 </li>
                             @endcan
                             @if(get_setting('vendor_system_activation') == 1)
+                            @php
+                                $pendingSellerProducts = \App\Models\Product::where('approved', 0)->where('wholesale_product', 0)->where('added_by','seller')->where('auction_product', 0)->count();
+                            @endphp
                                 @can('show_seller_products')
                                     <li class="aiz-side-nav-item">
                                         <a href="{{route('products.seller')}}" class="aiz-side-nav-link {{ areActiveRoutes(['products.seller', 'products.seller.edit']) }}">
                                             <span class="aiz-side-nav-text">{{ translate('Seller Products') }}</span>
+                                            @if($pendingSellerProducts > 0)<span class="badge badge-info">{{ $pendingSellerProducts }}</span> @endif
                                         </a>
                                     </li>
                                 @endcan
@@ -245,10 +249,14 @@
                                         </a>
                                     </li>
                                 @endcan
+                                @php
+                                    $pendingProducts = \App\Models\Product::where('approved', 0)->where('wholesale_product', 1)->where('added_by','seller')->count();
+                                @endphp
                                 @can('view_sellers_wholesale_products')
                                     <li class="aiz-side-nav-item">
                                         <a href="{{route('wholesale_products.seller')}}" class="aiz-side-nav-link {{ areActiveRoutes(['wholesale_product_edit.admin']) }}">
                                             <span class="aiz-side-nav-text">{{ translate('Seller Wholesale Products') }}</span>
+                                            @if($pendingProducts > 0)<span class="badge badge-info">{{ $pendingProducts }}</span> @endif
                                         </a>
                                     </li>
                                 @endcan

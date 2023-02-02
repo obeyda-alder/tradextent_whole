@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Utility\ProductUtility;
 use Combinations;
 use Illuminate\Support\Str;
-
+use Auth;
 class ProductService
 {
     public function store(array $data)
@@ -273,6 +273,19 @@ class ProductService
 
         unset($collection['button']);
         
+        // $approved = 1;
+        // if (auth()->user()->user_type == 'seller') {
+        //     $user_id = auth()->user()->id;
+        //     if (get_setting('product_approve_by_admin') == 1) {
+        //         $approved = 0;
+        //     }
+        // }
+        if(Auth::user()->user_type == 'seller'){
+            $product->user_id = Auth::user()->id;
+            if(get_setting('product_approve_by_admin') == 1) {
+                $product->approved = 0;
+            }
+        }
         $data = $collection->merge(compact(
             'discount_start_date',
             'discount_end_date',
@@ -282,7 +295,7 @@ class ProductService
             'choice_options',
             'attributes',
         ))->toArray();
-        
+        // $product->approved=$approved;
         $product->update($data);
 
         return $product;

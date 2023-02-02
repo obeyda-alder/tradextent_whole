@@ -324,6 +324,13 @@ class WholesaleService
         $product_stock->qty         = $request->current_stock;
         $product_stock->save();
 
+        if(Auth::user()->user_type == 'seller'){
+            $product->user_id = Auth::user()->id;
+            if(get_setting('product_approve_by_admin') == 1) {
+                $product->approved = 0;
+            }
+        }
+
         $product->save();
 
         foreach ($product->stocks->first()->wholesalePrices as $key => $wholesalePrice) {
