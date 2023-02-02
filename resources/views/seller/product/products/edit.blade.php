@@ -316,6 +316,10 @@
                     <input type="text" placeholder="{{translate('Unit price')}}" name="unit_price" class="form-control"
                         value="{{$product->unit_price}}" required>
                 </div>
+                <span class="col-md-3" style="align-self: center;">
+                    {{get_system_default_currency()->name}}
+                    ({{get_system_default_currency()->symbol}})
+                </span>
             </div>
 
             @php
