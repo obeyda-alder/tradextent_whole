@@ -168,7 +168,7 @@ class SellerPackageController extends Controller
         $seller_package = SellerPackage::findOrFail(Session::get('payment_data')['seller_package_id']);
 
         if ($seller_package->amount == 0) {
-            return $this->purchase_payment_done(Session::get('payment_data'), null);
+            return $this->purchase_payment_done(Session::get('payment_data'), 'free');
         } elseif (Auth::user()->shop->seller_package != null && $seller_package->product_upload_limit < Auth::user()->shop->seller_package->product_upload_limit) {
             flash(translate('You have more uploaded products than this package limit. You need to remove excessive products to downgrade.'))->warning();
             return back();
@@ -221,7 +221,8 @@ class SellerPackageController extends Controller
     {
         $seller_package = SellerPackage::findOrFail($request->package_id);
 
-        if (Auth::user()->shop->seller_package != null && $seller_package->product_upload_limit < Auth::user()->shop->seller_package->product_upload_limit) {
+        // if (Auth::user()->shop->seller_package != null && $seller_package->product_upload_limit < Auth::user()->shop->seller_package->product_upload_limit) {
+        if (Auth::user()->shop->seller_package != null && $seller_package->product_upload_limit < Auth::user()->shop->user->products->count()) {
             flash(translate('You have more uploaded products than this package limit. You need to remove excessive products to downgrade.'))->warning();
             return redirect()->route('seller.seller_packages_list');
         }

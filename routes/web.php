@@ -329,7 +329,12 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/addresses/set_default/{id}', 'set_default')->name('addresses.set_default');
     });
 });
-
+//  NOTE:TO solve unauthorized request 
+Route::controller(AddressController::class)->group(function () {
+    Route::post('/get-states', 'getStates')->name('get-state');
+    Route::post('/get-cities', 'getCities')->name('get-city');
+});
+//
 Route::resource('shops', ShopController::class);
 
 Route::get('/instamojo/payment/pay-success', [InstamojoController::class, 'success'])->name('instamojo.success');

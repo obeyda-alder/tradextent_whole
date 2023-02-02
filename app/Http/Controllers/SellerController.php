@@ -7,6 +7,7 @@ use App\Models\Seller;
 use App\Models\User;
 use App\Models\Shop;
 use App\Models\Product;
+use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Support\Facades\Hash;
@@ -202,7 +203,9 @@ class SellerController extends Controller
     public function show_verification_request($id)
     {
         $shop = Shop::findOrFail($id);
-        return view('backend.sellers.verification', compact('shop'));
+        $user_id = $shop->user->id;
+        $address = Address::where('user_id',$user_id)->where('set_default',1)->first();
+        return view('backend.sellers.verification', compact('shop','address'));
     }
 
     public function approve_seller($id)

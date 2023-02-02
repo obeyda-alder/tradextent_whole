@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\BusinessSetting;
 use Auth;
 use Hash;
+use App\Models\Address;
 use App\Notifications\EmailVerificationNotification;
 
 class ShopController extends Controller
@@ -74,7 +75,7 @@ class ShopController extends Controller
             } else {
                 flash(translate('Sorry! Password did not match.'))->error();
                 return back();
-            }
+            }     
         } else {
             $user = Auth::user();
             if ($user->customer != null) {
@@ -84,11 +85,28 @@ class ShopController extends Controller
             $user->save();
         }
 
+        foreach ($user->addresses as $key => $address) {
+            $address->set_default = 0;
+            $address->save();
+        }
+
+        $address = new Address;
+        $address->user_id       = $user->id;
+        $address->address       = $request->address;
+        $address->country_id    = $request->country_id;
+        $address->state_id      = $request->state_id;
+        $address->city_id       = $request->city_id;
+        $address->postal_code   = $request->postal_code;
+        $address->phone   = $request->phone_number;
+        $address->set_default = 1;
+       
+        $address->save();
+
         if (Shop::where('user_id', $user->id)->first() == null) {
             $shop = new Shop;
             $shop->user_id = $user->id;
-            $shop->name = $request->name;
-            $shop->address = $request->address;
+            $shop->name = $request->shop_name;
+            $shop->address = null;
             $shop->slug = preg_replace('/\s+/', '-', $request->name);
 
             if ($shop->save()) {

@@ -10,9 +10,14 @@
         <a href="{{ route('sellers.approve', $shop->id) }}" class="btn btn-circle btn-success d-innline-block">{{translate('Accept')}}</a>
       </div>
   </div>
+
   <div class="card-body row">
       <div class="col-md-5">
           <h6 class="mb-4">{{ translate('User Info') }}</h6>
+          <p class="text-muted">
+            <strong>{{translate('Shop Name')}}</strong>
+            <span class="ml-2">{{ $shop->user->shop->name }}</span>
+          </p>
           <p class="text-muted">
               <strong>{{ translate('Name') }} :</strong>
               <span class="ml-2">{{ $shop->user->name }}</span>
@@ -21,17 +26,29 @@
               <strong>{{translate('Email')}}</strong>
               <span class="ml-2">{{ $shop->user->email }}</span>
           </p>
+        @if($address)
           <p class="text-muted">
-              <strong>{{translate('Address')}}</strong>
-              <span class="ml-2">{{ $shop->user->address }}</span>
+              <strong>{{translate('City')}}</strong>
+              <span class="ml-2">{{ optional($address->city)->name }}</span>
+          </p>
+          <p class="text-muted">
+              <strong>{{translate('State')}}</strong>
+              <span class="ml-2">{{ optional($address->state)->name }}</span>
+          </p>
+          <p class="text-muted">
+              <strong>{{translate('Country')}}</strong>
+              <span class="ml-2">{{ optional($address->country)->name }}</span>
+          </p>
+          <p class="text-muted">
+            <strong>{{translate('Address')}}</strong>
+            <span class="ml-2">{{ $address->address }}</span>
           </p>
           <p class="text-muted">
               <strong>{{translate('Phone')}}</strong>
-              <span class="ml-2">{{ $shop->user->phone }}</span>
+              <span class="ml-2">{{ $address->phone }}</span>
           </p>
-          <br>
-
-          <h6 class="mb-4">{{ translate('Shop Info') }}</h6>
+        @endif
+          {{-- <h6 class="mb-4">{{ translate('Shop Info') }}</h6>
           <p class="text-muted">
               <strong>{{translate('Shop Name')}}</strong>
               <span class="ml-2">{{ $shop->user->shop->name }}</span>
@@ -39,7 +56,7 @@
           <p class="text-muted">
               <strong>{{translate('Address')}}</strong>
               <span class="ml-2">{{ $shop->address }}</span>
-          </p>
+          </p> --}}
       </div>
       <div class="col-md-5">
         <h6 class="mb-4">{{ translate('Verification Info') }}</h6>

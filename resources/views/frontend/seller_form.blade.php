@@ -48,6 +48,10 @@
                                     <label>{{ translate('Repeat Password')}} <span class="text-primary">*</span></label>
                                     <input type="password" class="form-control" placeholder="{{  translate('Confirm Password') }}" name="password_confirmation">
                                 </div>
+                                <div class="form-group">
+                                    <label>{{ translate('Shop Name')}} <span class="text-primary">*</span></label>
+                                    <input type="text" class="form-control" placeholder="{{ translate('Shop Name')}}" name="shop_name" required>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -56,13 +60,57 @@
                             {{ translate('Basic Info')}}
                         </div>
                         <div class="p-3">
-                            <div class="form-group">
-                                <label>{{ translate('Shop Name')}} <span class="text-primary">*</span></label>
-                                <input type="text" class="form-control" placeholder="{{ translate('Shop Name')}}" name="name" required>
-                            </div>
-                            <div class="form-group">
+                            
+                            {{-- <div class="form-group">
                                 <label>{{ translate('Address')}} <span class="text-primary">*</span></label>
                                 <input type="text" class="form-control mb-3" placeholder="{{ translate('Address')}}" name="address" required>
+                            </div>                     --}}
+                            <div class="form-group">
+                                <label>{{ translate('Address')}} <span class="text-primary">*</span></label>
+                                <textarea class="form-control mb-3" placeholder="{{ translate('Your Address')}}" rows="2" name="address" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                
+                                    <label>{{ translate('Country')}} <span class="text-primary">*</span></label>
+                                
+                                    <div class="mb-3">
+                                        <select class="form-control aiz-selectpicker" data-live-search="true" data-placeholder="{{ translate('Select your country') }}" name="country_id" required>
+                                            <option value="">{{ translate('Select your country') }}</option>
+                                            @foreach (\App\Models\Country::where('status', 1)->get() as $key => $country)
+                                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                
+                                    <label>{{ translate('State')}} <span class="text-primary">*</span></label>
+                                
+                                    <select class="form-control  aiz-selectpicker" data-live-search="true" name="state_id" required>
+
+                                    </select>
+                            </div>
+
+                            <div class="form-group">
+                                
+                                    <label>{{ translate('City')}} <span class="text-primary">*</span></label>
+                                
+                                    <select class="form-control  aiz-selectpicker" data-live-search="true" name="city_id" required>
+
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                
+                                    <label>{{ translate('Postal code')}} <span class="text-primary">*</span></label>
+                                
+                                    <input type="text" class="form-control mb-3" placeholder="{{ translate('Your Postal Code')}}" name="postal_code" value="" required>
+                            </div>
+                            <div class="form-group">
+                                
+                                    <label>{{ translate('Phone')}} <span class="text-primary">*</span></label>
+                                
+                                    <input type="text" class="form-control mb-3" placeholder="{{ translate('Your Phone Number')}}" name="phone_number" value="" required>
                             </div>
                         </div>
                     </div>
@@ -82,6 +130,9 @@
     </div>
 </section>
 
+@section('modal')
+    @include('frontend.partials.address_modal')
+@endsection
 @endsection
 
 @section('script')

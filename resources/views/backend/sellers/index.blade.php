@@ -62,7 +62,7 @@
                         @endif
                     </th>
                     <th>{{translate('Name')}}</th>
-                    <th data-breakpoints="lg">{{translate('Phone')}}</th>
+                    {{-- <th data-breakpoints="lg">{{translate('Phone')}}</th> --}}
                     <th data-breakpoints="lg">{{translate('Email Address')}}</th>
                     <th data-breakpoints="lg">{{translate('Verification Info')}}</th>
                     <th data-breakpoints="lg">{{translate('Approval')}}</th>
@@ -89,7 +89,7 @@
                             @endif
                         </td>
                         <td>@if($shop->user->banned == 1) <i class="fa fa-ban text-danger" aria-hidden="true"></i> @endif {{$shop->name}}</td>
-                        <td>{{$shop->user->phone}}</td>
+                        {{-- <td>{{$shop->user->phone}}</td> --}}
                         <td>{{$shop->user->email}}</td>
                         <td>
                             @if ($shop->verification_info != null)
