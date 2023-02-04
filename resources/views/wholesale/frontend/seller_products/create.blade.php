@@ -571,7 +571,7 @@
                         <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
                     </div>
                     <div class="card-body">
-                        @foreach(\App\Models\Tax::where('tax_status', 1)->get() as $tax)
+                        @foreach(\App\Models\Tax::where('tax_status', 1)->where('id','!=', 5)->get() as $tax)
                         <label for="name">
                             {{$tax->name}}
                             <input type="hidden" value="{{$tax->id}}" name="tax_id[]">

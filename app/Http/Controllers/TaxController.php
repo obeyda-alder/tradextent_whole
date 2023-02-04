@@ -124,6 +124,10 @@ class TaxController extends Controller
      */
     public function destroy($id)
     {   
+        if($id == 3 || $id == 4 ||$id == 5 ){
+            flash(translate('Can\'t be deleted!'))->error();
+            return back();
+        }
         if(Tax::destroy($id)){
             flash(translate('Tax has been deleted successfully'))->success();
             return redirect()->route('tax.index');

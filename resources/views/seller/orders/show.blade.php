@@ -111,6 +111,7 @@
                             <tr>
                                 <td class="text-main text-bold">{{ translate('Total amount') }}</td>
                                 <td class="text-right">
+                                    {{-- TODO: remove profit from tax for seller --}}
                                     {{ single_price($order->grand_total) }}
                                 </td>
                             </tr>

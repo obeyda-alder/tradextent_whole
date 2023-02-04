@@ -45,12 +45,21 @@
                         
                     </td>
                     <td class="text-right">
+                        @if($tax->id !== 3 && $tax->id !== 4 && $tax->id !== 5)
                         <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('tax.edit', $tax->id )}}" title="{{ translate('Edit') }}">
                             <i class="las la-edit"></i>
                         </a>
                         <a href="#" class="btn btn-soft-danger btn-icon btn-circle btn-sm confirm-delete" data-href="{{route('tax.destroy', $tax->id)}}" title="{{ translate('Delete') }}">
                             <i class="las la-trash"></i>
                         </a>
+                        @else
+                        <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
+                            <i class="las la-edit"></i>
+                        </a>
+                        <a href="#" class="btn btn-soft-secondary btn-icon btn-circle btn-sm confirm-delete disabled" data-href="#" title="{{ translate('Delete') }}">
+                            <i class="las la-trash"></i>
+                        </a>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
