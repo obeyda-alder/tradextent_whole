@@ -21,8 +21,14 @@ class DigitalProductController  extends Controller
      */
     public function index(Request $request)
     {
+        if(Auth::user()->shop->verification_status){
         $products = Product::where('user_id', Auth::user()->id)->where('digital', 1)->orderBy('created_at', 'desc')->paginate(10);
         return view('seller.product.digitalproducts.index', compact('products'));
+        }
+        else{
+            flash('Your shop is not verified yet!')->warning();
+            return back();
+        }
     }
 
     /**

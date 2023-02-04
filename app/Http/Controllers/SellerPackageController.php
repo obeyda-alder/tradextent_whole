@@ -153,8 +153,14 @@ class SellerPackageController extends Controller
 
     public function seller_packages_list()
     {
-        $seller_packages = SellerPackage::all();
-        return view('seller_packages.frontend.seller_packages_list', compact('seller_packages'));
+        if(Auth::user()->shop->verification_status){
+            $seller_packages = SellerPackage::all();
+            return view('seller_packages.frontend.seller_packages_list', compact('seller_packages'));  
+        }
+        else{
+            flash('Your shop is not verified yet!')->warning();
+            return back();
+        }
     }
 
     public function purchase_package(Request $request)

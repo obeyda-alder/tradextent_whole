@@ -42,6 +42,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        if(Auth::user()->shop->verification_status){        
         $search = null;
         $products = Product::where('user_id', Auth::user()->id)->where('digital', 0)->orderBy('created_at', 'desc');
         if ($request->has('search')) {
@@ -50,6 +51,11 @@ class ProductController extends Controller
         }
         $products = $products->paginate(10);
         return view('seller.product.products.index', compact('products', 'search'));
+        }
+        else{
+            flash('Your shop is not verified yet!')->warning();
+            return back();
+        }
     }
 
     public function create(Request $request)

@@ -123,6 +123,7 @@ class WholesaleProductController extends Controller
     // Wholesale Products list in Seller panel 
     public function wholesale_products_list_seller(Request $request)
     {
+        if(Auth::user()->shop->verification_status){        
         $sort_search = null;
         $col_name = null;
         $query = null;
@@ -143,6 +144,11 @@ class WholesaleProductController extends Controller
         $products = $products->paginate(15);
 
         return view('wholesale.frontend.seller_products.index', compact('products', 'sort_search','col_name'));
+    }
+    else{
+        flash('Your shop is not verified yet!')->warning();
+        return back();
+    }
     }
 
     public function product_create_admin()
