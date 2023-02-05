@@ -96,13 +96,14 @@ class CommissionController extends Controller
             foreach ($order->orderDetails as $orderDetail) {
                 $orderDetail->payment_status = 'paid';
                 $orderDetail->save();
-                $commission_percentage = 0;
+                // $commission_percentage = 0;
+                $commission_percentage = $orderDetail->product->taxes->where('tax_id',5)->first()->tax;
                 
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
-                        $commission_percentage = $orderDetail->product->category->commision_rate;
+                        $commission_percentage += $orderDetail->product->category->commision_rate;
                     } else if ($orderDetail->product->user->user_type == 'seller') {
-                        $commission_percentage = get_setting('vendor_commission');
+                        $commission_percentage += get_setting('vendor_commission');
                     }
                 }
                 if ($orderDetail->product->user->user_type == 'seller') {
@@ -134,13 +135,13 @@ class CommissionController extends Controller
             foreach ($order->orderDetails as $orderDetail) {
                 $orderDetail->payment_status = 'paid';
                 $orderDetail->save();
-                $commission_percentage = 0;
-
+                // $commission_percentage = 0;
+                $commission_percentage = $orderDetail->product->taxes->where('tax_id',5)->first()->tax;
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
-                        $commission_percentage = $orderDetail->product->category->commision_rate;
+                        $commission_percentage += $orderDetail->product->category->commision_rate;
                     } else if ($orderDetail->product->user->user_type == 'seller') {
-                        $commission_percentage = get_setting('vendor_commission');
+                        $commission_percentage += get_setting('vendor_commission');
                     }
                 }
 
