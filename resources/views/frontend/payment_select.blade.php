@@ -487,7 +487,7 @@
                                     </div>
                                 </div>
 
-                                @if (addon_is_activated('offline_payment'))
+                                {{-- @if (addon_is_activated('offline_payment'))
                                     <div class="d-none mb-3 rounded border bg-white p-3 text-left">
                                         <div id="manual_payment_description">
 
@@ -521,7 +521,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                @endif --}}
                                 @if (Auth::check() && get_setting('wallet_system') == 1)
                                     <div class="separator mb-3">
                                         <span class="bg-white px-3">

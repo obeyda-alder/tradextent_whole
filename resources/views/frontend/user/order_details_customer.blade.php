@@ -228,12 +228,19 @@
                     </table>
                 </div>
             </div>
-            @if ($order->manual_payment && $order->manual_payment_data == null)
+            @if ($order->manual_payment && $order->manual_payment_data == null && $order->delivery_status == 'confirmed')
                 <button onclick="show_make_payment_modal({{ $order->id }})"
                     class="btn btn-block btn-primary">{{ translate('Make Payment') }}</button>
             @endif
         </div>
     </div>
+    @if ($order->manual_payment && $order->manual_payment_data == null && $order->delivery_status == 'pending')
+        <div class="card">
+            <div class="card-header">
+                <b class="fs-15">{{ translate('You will able to pay when order status is confirmed.') }}</b>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @section('modal')

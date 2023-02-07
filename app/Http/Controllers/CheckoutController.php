@@ -68,7 +68,7 @@ class CheckoutController extends Controller
                     );
                     foreach ($combined_order->orders as $order) {
                         $order->manual_payment = 1;
-                        $order->manual_payment_data = json_encode($manual_payment_data);
+                        // $order->manual_payment_data = json_encode($manual_payment_data);
                         $order->save();
                     }
                     flash(translate('Your order has been placed successfully. Please submit payment information from purchase history'))->success();
