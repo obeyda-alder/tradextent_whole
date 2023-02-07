@@ -721,6 +721,7 @@
                             <div class="form-group col-md-6">
                                 <input type="number" lang="en" min="0" value="{{ $tax_amount }}" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
                             </div>
+                            @if($tax->id != 5)
                             <div class="form-group col-md-6">
                                 <select class="form-control aiz-selectpicker" name="tax_type[]">
                                     <option value="amount" @if($tax_type == 'amount') selected @endif>
@@ -731,6 +732,18 @@
                                     </option>
                                 </select>
                             </div>
+                            @else
+                            <div class="form-group col-md-6">
+                                <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                    {{-- <option value="amount" @if($tax_type == 'amount') selected @endif>
+                                        {{translate('Flat')}}
+                                    </option> --}}
+                                    <option value="percent" selected>
+                                        {{translate('Percent')}}
+                                    </option>
+                                </select>
+                            </div>
+                            @endif
                         </div>
                         @endforeach
                     </div>

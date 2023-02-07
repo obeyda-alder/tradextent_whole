@@ -205,7 +205,7 @@
                         ->sum('grand_total');
                 @endphp
 
-                <div class="card-body">
+                {{-- <div class="card-body">
                     <div class="card-title text-primary fs-16 fw-600">
                         {{ translate('Sold Amount') }}
                     </div>
@@ -223,7 +223,7 @@
                         @endphp
                         {{ translate('Last Month') }}: {{ single_price($orderTotal) }}
                     </p>
-                </div>
+                </div> --}}
             </div>
         </div>
         <div class="col-sm-6 col-md-6 col-lg-3 mb-4">

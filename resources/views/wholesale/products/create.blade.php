@@ -576,7 +576,7 @@
                             {{$tax->name}}
                             <input type="hidden" value="{{$tax->id}}" name="tax_id[]">
                         </label>
-
+                        @if($tax->id != 5)
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
@@ -588,6 +588,19 @@
                                 </select>
                             </div>
                         </div>
+                        @else
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                    {{-- <option value="amount">{{translate('Flat')}}</option> --}}
+                                    <option value="percent" selected>{{translate('Percent')}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        @endif
                         @endforeach
                     </div>
                 </div>
