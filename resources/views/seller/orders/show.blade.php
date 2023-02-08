@@ -56,7 +56,7 @@
             </div>
             <div class="row gutters-5 mt-2">
                 <div class="col text-md-left text-center">
-                    @if(json_decode($order->shipping_address))
+                    {{-- @if(json_decode($order->shipping_address))
                         <address>
                             <strong class="text-main">
                             </strong><br>
@@ -83,7 +83,7 @@
                             target="_blank"><img
                                 src="{{ uploaded_asset(json_decode($order->manual_payment_data)->photo) }}" alt=""
                                 height="100"></a>
-                    @endif
+                    @endif --}}
                 </div>
                 <div class="col-md-4 ml-auto">
                     <table>
@@ -111,7 +111,6 @@
                             <tr>
                                 <td class="text-main text-bold">{{ translate('Total amount') }}</td>
                                 <td class="text-right">
-                                    {{-- TODO: remove profit from tax for seller --}}
                                     {{ single_price($order->grand_total) }}
                                 </td>
                             </tr>
@@ -147,6 +146,8 @@
                                     {{ translate('Price') }}</th>
                                 <th data-breakpoints="lg" class="min-col text-uppercase text-right">
                                     {{ translate('Total') }}</th>
+                                <th  width="20%" data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Order Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -204,6 +205,11 @@
                                     <td class="text-center">
                                         {{ single_price($orderDetail->price / $orderDetail->quantity) }}</td>
                                     <td class="text-center">{{ single_price($orderDetail->price) }}</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('seller.orders.product_edit', ['id'=>$orderDetail->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
+                                            <i class="las la-edit"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

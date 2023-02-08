@@ -195,8 +195,12 @@
                                 </th>
                                 <th data-breakpoints="lg" class="min-col text-uppercase text-center">
                                     {{ translate('Price') }}</th>
-                                <th data-breakpoints="lg" class="min-col text-uppercase text-right">
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
                                     {{ translate('Total') }}</th>
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Seller response') }}</th>
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -273,6 +277,32 @@
                                     </td>
                                     <td class="text-center">
                                         {{ single_price($orderDetail->price) }}
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($orderDetail->seller_status == 'pending')
+                                        <span class="badge badge-inline badge-info">
+                                            {{ translate(ucfirst(str_replace('_', ' ', $orderDetail->seller_status))) }}
+                                        </span>
+                                        @elseif($orderDetail->seller_status == 'cancelled')
+                                        <span class="badge badge-inline badge-danger">
+                                            {{ translate(ucfirst(str_replace('_', ' ', $orderDetail->seller_status))) }}
+                                        </span>
+                                        @else
+                                        <span class="badge badge-inline badge-success">
+                                            {{ translate(ucfirst(str_replace('_', ' ', $orderDetail->seller_status))) }}
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($orderDetail->seller_status == 'accepted' || $orderDetail->seller_status == 'pending')
+                                        <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
+                                            <i class="las la-edit"></i>
+                                        </a>
+                                        @else
+                                        <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('seller.orders.product_edit', ['id'=>$orderDetail->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
+                                            <i class="las la-edit"></i>
+                                        </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

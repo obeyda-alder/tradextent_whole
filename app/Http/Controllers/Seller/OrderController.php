@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\ProductStock;
 use App\Models\SmsTemplate;
 use App\Models\User;
@@ -136,7 +137,33 @@ class OrderController extends Controller
 
         return 1;
     }
+    // Update Order Status from seller
+    public function update_seller_order_status(Request $request)
+    {
+        $OrderDetail = OrderDetail::findOrFail($request->order_id);
+        $OrderDetail->seller_status = $request->status;
+        $OrderDetail->save();
 
+        //sends Notifications to user
+
+        return 1;
+    }
+
+    // Show order product edit 
+    public function product_edit($id){
+        $orderDetail = OrderDetail::findOrFail($id);
+        return view('seller.orders.order_status', compact('orderDetail'));
+    }
+    // Add Note to Order
+    public function seller_order_note(Request $request){
+        $OrderDetail = OrderDetail::findOrFail($request->order_detail_id);
+        $OrderDetail->note_quantity = $request->note_quantity;
+        $OrderDetail->note_price = $request->note_price;
+        $OrderDetail->note_shipping_dayes = $request->note_shipping_dayes;
+        $OrderDetail->save();
+        flash(translate('Order product status has been updated successfully'))->success();
+        return redirect()->back();
+    }
     // Update Payment Status
     public function update_payment_status(Request $request)
     {
@@ -188,5 +215,6 @@ class OrderController extends Controller
         }
         return 1;
     }
+
 
 }
