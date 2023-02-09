@@ -236,7 +236,7 @@ if (!function_exists('discount_in_percentage')) {
 
 //Shows Price on page based on carts
 if (!function_exists('cart_product_price')) {
-    function cart_product_price($cart_product, $product, $formatted = true, $tax = true)
+    function cart_product_price($cart_product, $product, $formatted = true, $tax = true, $edited_order_price = null)
     {
         if ($product->auction_product == 0) {
             $str = '';
@@ -261,7 +261,9 @@ if (!function_exists('cart_product_price')) {
                 }
             }
 
-
+            if($edited_order_price){
+                $price = $edited_order_price;
+            }
             //discount calculation
             $discount_applicable = false;
 
@@ -307,7 +309,7 @@ if (!function_exists('cart_product_price')) {
 }
 
 if (!function_exists('cart_product_tax')) {
-    function cart_product_tax($cart_product, $product, $formatted = true)
+    function cart_product_tax($cart_product, $product, $formatted = true, $edited_order_price=null)
     {
         $str = '';
         if ($cart_product['variation'] != null) {
@@ -327,7 +329,9 @@ if (!function_exists('cart_product_tax')) {
         ) {
             $discount_applicable = true;
         }
-
+        if($edited_order_price){
+            $price = $edited_order_price;
+        }
         if ($discount_applicable) {
             if ($product->discount_type == 'percent') {
                 $price -= ($price * $product->discount) / 100;

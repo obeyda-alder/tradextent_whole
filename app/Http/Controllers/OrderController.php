@@ -207,6 +207,7 @@ class OrderController extends Controller
                 $order_detail->seller_id = $product->user_id;
                 $order_detail->product_id = $product->id;
                 $order_detail->variation = $product_variation;
+                $order_detail->est_shipping_days = $product->est_shipping_days;
                 $order_detail->price = cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $order_detail->tax = cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
                 $order_detail->shipping_type = $cartItem['shipping_type'];
@@ -578,4 +579,157 @@ class OrderController extends Controller
 
         return 1;
     }
+    public function add_order_admin(Request $request){
+        // todo: Check if there is coupone and discount
+        $product = Product::find($request->product_id);
+        $old_order = Order::find($request->order_id);
+        $old_order_detail = OrderDetail::find($request->order_detail_id);
+        $cartItem = new Cart; 
+        $cartItem['owner_id'] = $product->user_id;
+        $cartItem['user_id'] = $old_order->user_id;
+        $cartItem['variation'] = $old_order_detail->variation;
+        $cartItem['quantity'] = $request->quantity;
+
+        $combined_order = new CombinedOrder;
+        $combined_order->user_id = $old_order->user_id;
+        $combined_order->shipping_address = $old_order->shipping_address;
+        $combined_order->save();
+
+
+        $order = new Order;
+        $order->combined_order_id = $combined_order->id;
+        $order->user_id = $old_order->user_id;
+        $order->shipping_address = $combined_order->shipping_address;
+        $order->additional_info = $old_order->additional_info;
+        $order->payment_type = $old_order->payment_type;
+        $order->shipping_type = $old_order->shipping_type;
+        $order->manual_payment = $old_order->manual_payment;
+        $order->delivery_viewed = '0';
+        $order->payment_status_viewed = '0';
+        $order->code = date('Ymd-His') . rand(10, 99);
+        $order->date = strtotime('now');
+        $order->save();
+
+        $subtotal = 0;
+        $tax = 0;
+        $shipping = 0;
+        $coupon_discount = 0;
+
+        $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
+        $tax +=  cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
+        $product_variation = $cartItem['variation'];        
+        // $coupon_discount += $cartItem['discount'];
+
+        $product_stock = $product->stocks->where('variant', $product_variation)->first();
+                
+        $product_stock->qty -= $cartItem['quantity'];
+        $product_stock->save();
+        $order_detail = new OrderDetail;
+        $order_detail->order_id = $order->id;
+        $order_detail->seller_id = $product->user_id;
+        $order_detail->product_id = $product->id;
+        $order_detail->variation = $product_variation;
+        $order_detail->est_shipping_days = $product->est_shipping_days;
+        $order_detail->price = cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
+        $order_detail->tax = cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
+        $order_detail->shipping_type = $old_order_detail->shipping_type;
+        $order_detail->shipping_cost = $old_order_detail->shipping_cost;
+
+        $shipping += $order_detail->shipping_cost;
+        //End of storing shipping cost
+
+        $order_detail->quantity = $cartItem['quantity'];
+        $order_detail->save();
+
+        $product->num_of_sale += $cartItem['quantity'];
+        $product->save();
+
+        $order->seller_id = $product->user_id;
+
+        if ($product->added_by == 'seller' && $product->user->seller != null){
+            $seller = $product->user->seller;
+            $seller->num_of_sale += $cartItem['quantity'];
+            $seller->save();
+        }        
+
+        $order->grand_total = $subtotal + $tax + $shipping;
+
+        $combined_order->grand_total += $order->grand_total;
+
+        $order->save();
+
+        $combined_order->save();
+
+        NotificationUtility::sendNotification($order, 'placed');
+
+        flash(translate('Order has been added successfully'))->success();
+        return back();
+    }
+    public function edit_order($id){
+        $orderDetail = OrderDetail::findOrFail($id);
+        $order= Order::where('id', $orderDetail->order_id)->first();
+        return view('backend.sales.edit_order', compact('orderDetail','order'));
+    }
+    public function confirm_edit_order($id){
+        // todo: Check if there is coupone and discount
+        $orderDetail = OrderDetail::findOrFail($id);
+        $product = Product::findOrFail($orderDetail->product_id);
+        $tax = 0;
+        $price = $orderDetail->note_price;
+        $quantity = $orderDetail->note_quantity;
+        
+        //calculation of taxes
+        foreach ($product->taxes as $product_tax) {
+            if($product_tax->tax_type == 'percent'){
+                $tax += ($price * $product_tax->tax) / 100;
+            }
+            elseif($product_tax->tax_type == 'amount'){
+                $tax += $product_tax->tax;
+            }
+        }
+        // Calculation of new price and tax
+        $cartItem = new Cart; 
+        $cartItem['variation'] = $orderDetail->variation;
+        $cartItem['quantity'] = $quantity;
+
+        $subtotal = cart_product_price($cartItem, $product, false, false,$price) * $quantity;
+        $tax =  cart_product_tax($cartItem, $product,false,$price) * $quantity;
+        $shipping = $orderDetail->shipping_cost;
+        $orderDetail->tax = $tax;
+        $orderDetail->price = $subtotal;
+        $orderDetail->quantity = $quantity;
+        $orderDetail->seller_status = 'accepted';
+        $orderDetail->est_shipping_days = $orderDetail->note_shipping_dayes;
+        $orderDetail->save();
+
+        // Order grand total
+        $order = Order::where('id', $orderDetail->order_id)->first();
+        $all_order_details = OrderDetail::where('order_id',$order->id)->where('id','!=',$id)->get();
+        foreach($all_order_details as $order_detail){
+            $subtotal += $order_detail->price;
+            $tax += $order_detail->tax;
+            $shipping += $order_detail->shipping_cost;
+        }
+        $grand_total = $subtotal + $tax + $shipping;
+        $order->grand_total = $grand_total;
+        $order->delivery_status = 'pending';
+        $order->save();
+
+        // Combined Order grand total
+        $combined_order = CombinedOrder::findOrFail($order->combined_order_id);
+        $all_combind_orders = Order::where('combined_order_id',$combined_order->id)->where('id','!=',$order->id)->get();
+        $combind_orders_grand_total = $grand_total;
+        foreach($all_combind_orders as $combind_orders){
+            $combind_orders_grand_total += $combind_orders->grand_total;
+        }
+        $combined_order->grand_total = $combind_orders_grand_total;
+        $combined_order->save();
+        
+        // TODO: send notification to the customer and make order status edited 
+        NotificationUtility::sendNotification($order, 'edited');
+
+        flash(translate('Order has been edited successfully'))->success();
+        return back();
+    }
+
 }

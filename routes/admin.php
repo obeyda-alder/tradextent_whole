@@ -327,6 +327,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
         Route::post('/orders/update_delivery_status', 'update_delivery_status')->name('orders.update_delivery_status');
         Route::post('/orders/update_payment_status', 'update_payment_status')->name('orders.update_payment_status');
         Route::post('/orders/update_tracking_code', 'update_tracking_code')->name('orders.update_tracking_code');
+        
+        //Edit order
+        Route::get('/orders/edit-order/{id}', 'edit_order')->name('orders.edit_order');
+        Route::get('/orders/confirm-edit-order/{id}', 'confirm_edit_order')->name('orders.confirm_edit_order');
+        Route::post('/orders/add-order-admin', 'add_order_admin')->name('orders.add_order_admin');
 
         //Delivery Boy Assign
         Route::post('/orders/delivery-boy-assign', 'assign_delivery_boy')->name('orders.delivery-boy-assign');

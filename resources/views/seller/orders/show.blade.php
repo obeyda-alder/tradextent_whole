@@ -206,9 +206,15 @@
                                         {{ single_price($orderDetail->price / $orderDetail->quantity) }}</td>
                                     <td class="text-center">{{ single_price($orderDetail->price) }}</td>
                                     <td class="text-center">
+                                        @if($delivery_status == 'pending')
                                         <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('seller.orders.product_edit', ['id'=>$orderDetail->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
                                             <i class="las la-edit"></i>
                                         </a>
+                                        @else
+                                        <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
+                                            <i class="las la-edit"></i>
+                                        </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
