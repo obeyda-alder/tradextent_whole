@@ -167,7 +167,13 @@
             <div class="d-flex align-items-center">
 
                 <div class="col-auto col-xl-3 pl-0 pr-3 d-flex align-items-center">
-                    <a class="d-block py-20px mr-3 ml-0" href="{{ route('home') }}">
+                    @if(Session::has('product_type'))
+                        @if(Session::get('product_type') == 1)
+                    <a class="d-block py-20px mr-3 ml-0" href="{{ route('home-wholesale') }}">
+                        @else
+                        <a class="d-block py-20px mr-3 ml-0" href="{{ route('home-retail') }}">
+                    @endif
+                    @endif
                         @php
                             $header_logo = get_setting('header_logo');
                         @endphp
@@ -255,7 +261,7 @@
 
             </div>
         </div>
-        @if(Route::currentRouteName() != 'home')
+        {{-- @if(Route::currentRouteName() != 'home')
         <div class="hover-category-menu position-absolute w-100 top-100 left-0 right-0 d-none z-3" id="hover-category-menu">
             <div class="container">
                 <div class="row gutters-10 position-relative">
@@ -265,12 +271,27 @@
                 </div>
             </div>
         </div>
-        @endif
+        @endif --}}
     </div>
     @if ( get_setting('header_menu_labels') !=  null )
         <div class="bg-white border-top border-gray-200 py-1">
             <div class="container">
                 <ul class="list-inline mb-0 pl-0 mobile-hor-swipe text-center">
+                    @if(Session::has('product_type'))
+                    @if(Session::get('product_type') == 1)
+                    <li class="list-inline-item mr-0">
+                        <a href="{{ route('home-wholesale') }}" class="opacity-60 fs-14 px-3 py-2 d-inline-block fw-600 hov-opacity-100 text-reset">
+                            {{ translate('Home') }}
+                        </a>
+                    </li>
+                    @else
+                        <li class="list-inline-item mr-0">
+                            <a href="{{route('home-retail')}}" class="opacity-60 fs-14 px-3 py-2 d-inline-block fw-600 hov-opacity-100 text-reset">
+                                {{ translate('Home') }}
+                            </a>
+                        </li>
+                        @endif
+                        @endif
                     @foreach (json_decode( get_setting('header_menu_labels'), true) as $key => $value)
                     <li class="list-inline-item mr-0">
                         <a href="{{ json_decode( get_setting('header_menu_links'), true)[$key] }}" class="opacity-60 fs-14 px-3 py-2 d-inline-block fw-600 hov-opacity-100 text-reset">
@@ -278,6 +299,21 @@
                         </a>
                     </li>
                     @endforeach
+                    @if(Session::has('product_type'))
+                        @if(Session::get('product_type') == 1)
+                            <li class="list-inline-item mr-0">
+                                <a href="{{ route('products.category', 'all-wholesale-products')}}" class="opacity-60 fs-14 px-3 py-2 d-inline-block fw-600 hov-opacity-100 text-reset">
+                                    {{ translate('All wholesale products') }}
+                                </a>
+                            </li>
+                        @else
+                            <li class="list-inline-item mr-0">
+                                <a href="{{ route('products.category', 'all-retail-products')}}" class="opacity-60 fs-14 px-3 py-2 d-inline-block fw-600 hov-opacity-100 text-reset">
+                                    {{ translate('All retail products') }}
+                                </a>
+                            </li>
+                        @endif
+                    @endif
                 </ul>
             </div>
         </div>

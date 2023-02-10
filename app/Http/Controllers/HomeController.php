@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Mail\SecondEmailVerifyMailManager;
 use Artisan;
+use Session;
 
 class HomeController extends Controller
 {
@@ -46,6 +47,8 @@ class HomeController extends Controller
         Cache::forget('best_selling_products');
         Cache::forget('newest_products');
         Cache::forget('todays_deal_products');
+        Session::forget('product_type');
+        Session::put('product_type', 1);
 
         $featured_categories = Cache::rememberForever('featured_categories', function () {
             return Category::where('featured', 1)->get();
@@ -66,7 +69,8 @@ class HomeController extends Controller
         Cache::forget('best_selling_products');
         Cache::forget('newest_products');
         Cache::forget('todays_deal_products');
-
+        Session::forget('product_type');
+        Session::put('product_type', 0);
         $featured_categories = Cache::rememberForever('featured_categories', function () {
             return Category::where('featured', 1)->get();
         });

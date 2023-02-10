@@ -12,6 +12,7 @@ use App\Models\Shop;
 use App\Models\Attribute;
 use App\Models\AttributeCategory;
 use App\Utility\CategoryUtility;
+use Session;
 
 class SearchController extends Controller
 {
@@ -28,6 +29,10 @@ class SearchController extends Controller
         $selected_color = null;
 
         $conditions = ['published' => 1];
+        if (Session::has('product_type')) {
+            $type = Session::get('product_type');
+            $conditions = array_merge($conditions, ['wholesale_product' => $type]);
+        }
 
         if ($brand_id != null) {
             $conditions = array_merge($conditions, ['brand_id' => $brand_id]);
@@ -144,11 +149,18 @@ class SearchController extends Controller
 
     public function listingByCategory(Request $request, $category_slug)
     {
-        $category = Category::where('slug', $category_slug)->first();
-        if ($category != null) {
-            return $this->index($request, $category->id);
+        if($category_slug == 'all-wholesale-products'){
+            return $this->index($request);
+        }elseif($category_slug == 'all-retail-products'){
+            return $this->index($request);
         }
-        abort(404);
+        else{
+            $category = Category::where('slug', $category_slug)->first();
+            if ($category != null) {
+                return $this->index($request, $category->id);
+            }
+            abort(404);
+        }
     }
 
     public function listingByBrand(Request $request, $brand_slug)
