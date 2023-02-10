@@ -318,7 +318,7 @@
         $col_section = (get_setting('top10_categories') != null && get_setting('top10_brands') != null) ? 'col-lg-6' : 'col-lg-12';
         $col_block = (get_setting('top10_categories') != null && get_setting('top10_brands') != null) ? 'col-sm-6' : 'col-xl-3 col-lg-4 col-sm-6';
     @endphp
-    <section class="mb-4">
+    <section class="mb-4 mt-4">
         <div class="container">
             <div class="row gutters-10">
                 @if (get_setting('top10_categories') != null)

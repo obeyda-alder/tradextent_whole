@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Mail\SecondEmailVerifyMailManager;
+use Artisan;
 
 class HomeController extends Controller
 {
@@ -37,20 +38,51 @@ class HomeController extends Controller
      */
     public function index()
     {
+        return view('frontend.landing');
+    }
+
+    public function index_wholesale(){
+        Cache::forget('featured_products');
+        Cache::forget('best_selling_products');
+        Cache::forget('newest_products');
+        Cache::forget('todays_deal_products');
+
         $featured_categories = Cache::rememberForever('featured_categories', function () {
             return Category::where('featured', 1)->get();
         });
 
         $todays_deal_products = Cache::rememberForever('todays_deal_products', function () {
-            return filter_products(Product::where('published', 1)->where('todays_deal', '1'))->get();
+            return filter_products(Product::where('published', 1)->where('todays_deal', '1')->where('wholesale_product', '1'))->get();
+        });
+        
+        $newest_products = Cache::remember('newest_products', 3600, function () {
+            return filter_products(Product::where('wholesale_product', '1')->latest())->limit(12)->get();
+        });
+        return view('frontend.index', compact('featured_categories', 'todays_deal_products', 'newest_products'));
+
+    }
+    public function index_retail(){
+        Cache::forget('featured_products');
+        Cache::forget('best_selling_products');
+        Cache::forget('newest_products');
+        Cache::forget('todays_deal_products');
+
+        $featured_categories = Cache::rememberForever('featured_categories', function () {
+            return Category::where('featured', 1)->get();
+        });
+
+        $todays_deal_products = Cache::rememberForever('todays_deal_products', function () {
+            return filter_products(Product::where('published', 1)->where('todays_deal', '1')->where('wholesale_product', '0'))->get();
         });
 
         $newest_products = Cache::remember('newest_products', 3600, function () {
-            return filter_products(Product::latest())->limit(12)->get();
+            return filter_products(Product::where('wholesale_product', '0')->latest())->limit(12)->get();
         });
 
         return view('frontend.index', compact('featured_categories', 'todays_deal_products', 'newest_products'));
+
     }
+
 
     public function login()
     {
@@ -186,12 +218,30 @@ class HomeController extends Controller
 
     public function load_featured_section()
     {
-        return view('frontend.partials.featured_products_section');
+        if(previous_route() == 'home-wholesale'){
+            $featured_products = Cache::remember('featured_products', 3600, function () {
+                return filter_products(\App\Models\Product::where('published', 1)->where('featured', '1')->where('wholesale_product', 1))->limit(12)->get();
+            });
+        }else{
+            $featured_products = Cache::remember('featured_products', 3600, function () {
+                return filter_products(\App\Models\Product::where('published', 1)->where('featured', '1')->where('wholesale_product', 0))->limit(12)->get();
+            });
+        }
+        return view('frontend.partials.featured_products_section',compact('featured_products'));
     }
 
     public function load_best_selling_section()
     {
-        return view('frontend.partials.best_selling_section');
+        if(previous_route() == 'home-wholesale'){
+            $best_selling_products = Cache::remember('best_selling_products', 86400, function () {
+                return filter_products(\App\Models\Product::where('published', 1)->where('wholesale_product', 1)->orderBy('num_of_sale', 'desc'))->limit(20)->get();
+            });
+        }else{
+            $best_selling_products = Cache::remember('best_selling_products', 86400, function () {
+                return filter_products(\App\Models\Product::where('published', 1)->where('wholesale_product', 0)->orderBy('num_of_sale', 'desc'))->limit(20)->get();
+            });
+        }
+        return view('frontend.partials.best_selling_section',compact('best_selling_products'));
     }
 
     public function load_auction_products_section()
@@ -204,7 +254,8 @@ class HomeController extends Controller
 
     public function load_home_categories_section()
     {
-        return view('frontend.partials.home_categories_section');
+        $wholesale = previous_route() == 'home-wholesale' ? 1:0;
+        return view('frontend.partials.home_categories_section',compact('wholesale'));
     }
 
     public function load_best_sellers_section()

@@ -178,7 +178,7 @@
                         @endif
                     </a>
 
-                    @if(Route::currentRouteName() != 'home')
+                    {{-- @if(Route::currentRouteName() != 'home')
                         <div class="d-none d-xl-block align-self-stretch category-menu-icon-box ml-auto mr-0">
                             <div class="h-100 d-flex align-items-center" id="category-menu-icon">
                                 <div class="dropdown-toggle navbar-light bg-light h-40px w-50px pl-2 rounded border c-pointer">
@@ -186,7 +186,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
                 <div class="d-lg-none ml-auto mr-0">
                     <a class="p-2 d-block text-reset" href="javascript:void(0);" data-toggle="class-toggle" data-target=".front-header-search">
