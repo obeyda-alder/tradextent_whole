@@ -1447,7 +1447,9 @@ INSERT INTO `business_settings` (`type`, `value`, `created_at`, `updated_at`) VA
     (1380, 'en', 'Zip File', 'Zip File', '2020-11-17 06:58:45', '2020-11-17 06:58:45'),
     (1381, 'en', 'Install', 'Install', '2020-11-17 06:58:45', '2020-11-17 06:58:45'),
     (1382, 'en', 'This version is not capable of installing Addons, Please update.', 'This version is not capable of installing Addons, Please update.', '2020-11-17 06:59:11', '2020-11-17 06:59:11'),
-    (1383, 'en', 'You will able to pay when order status is confirmed.', 'You will able to pay when order status is confirmed.', '2020-11-17 06:59:11', '2020-11-17 06:59:11');
+    (1383, 'en', 'You will able to pay when order status is confirmed.', 'You will able to pay when order status is confirmed.', '2020-11-17 06:59:11', '2020-11-17 06:59:11'),
+    (1384, 'en', 'All wholesale products', 'All wholesale products', '2020-11-17 06:59:11', '2020-11-17 06:59:11'),
+    (1385, 'en', 'All retail products', 'All retail products', '2020-11-17 06:59:11', '2020-11-17 06:59:11');
 
 
     --

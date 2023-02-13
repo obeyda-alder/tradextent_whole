@@ -189,7 +189,7 @@ class ManualPaymentMethodController extends Controller
         $order->save();
 
         flash(translate('Your payment data has been submitted successfully'))->success();
-        return redirect()->route('home');
+        return redirect()->route('purchase_history.index');
     }
 
     public function offline_recharge_modal(Request $request)

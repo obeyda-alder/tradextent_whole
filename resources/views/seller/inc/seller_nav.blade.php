@@ -29,6 +29,21 @@
                 </div>
             @endif
         </div>
+        <div class="d-flex justify-content-around align-items-center" style="flex: 1;">
+            <div class="d-flex align-items-center justify-content-center w-100 h-100
+            @if (Auth::user()->shop->verification_status == 0) bg-warning @else bg-success @endif">
+            @if (Auth::user()->shop->verification_status == 0)
+                <div class="my-n4 py-1 text-center">
+                    <img src="{{ static_asset('assets/img/non_verified.png') }}" alt=""
+                        class="w-xxl-130px w-90px d-block">
+                </div>
+            @else
+                <div class="my-2 py-1" >
+                    <img src="{{ static_asset('assets/img/verified.png') }}" style="height: 35px;" alt="" width="">
+                </div>
+            @endif
+        </div>
+    </div>
         <div class="d-flex justify-content-around align-items-center align-items-stretch">
 
             <div class="aiz-topbar-item ml-2">

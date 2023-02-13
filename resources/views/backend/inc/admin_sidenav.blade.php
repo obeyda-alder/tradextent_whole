@@ -251,6 +251,7 @@
                                 @endcan
                                 @php
                                     $pendingProducts = \App\Models\Product::where('approved', 0)->where('wholesale_product', 1)->where('added_by','seller')->count();
+                                    $newOrders =  \App\Models\Order::where('viewed' , 0)->count();
                                 @endphp
                                 @can('view_sellers_wholesale_products')
                                     <li class="aiz-side-nav-item">
@@ -274,11 +275,17 @@
                             <span class="aiz-side-nav-arrow"></span>
                         </a>
                         <!--Submenu-->
+                        @php
+                            $newOrders =  \App\Models\Order::where('viewed' , 0)->count();
+                            $subbmitedPayments =  \App\Models\Order::where('payment_status' , 'Submitted')->count();
+                        @endphp
                         <ul class="aiz-side-nav-list level-2">
                             @can('view_all_orders')
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('all_orders.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['all_orders.index', 'all_orders.show'])}}">
                                         <span class="aiz-side-nav-text">{{translate('All Orders')}}</span>
+                                        @if($newOrders > 0)<span class="badge badge-success">{{ $newOrders }}</span> @endif
+                                        @if($subbmitedPayments > 0)<span class="badge badge-warning">{{ $subbmitedPayments }}</span> @endif
                                     </a>
                                 </li>
                             @endcan

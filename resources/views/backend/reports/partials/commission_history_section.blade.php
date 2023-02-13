@@ -1,4 +1,19 @@
+@php
+    $total= \App\Models\CommissionHistory::sum('admin_commission');
+@endphp
 <form action="{{ route('commission-log.index') }}" method="GET">
+    <div class="card-header row gutters-5">
+        <div class="col text-center text-md-left">
+            <h5 class="mb-md-0 h6">{{ translate('Total Commission') }}</h5>
+        </div>
+        <div class="col-md-3">
+            <h5 class="mb-md-0 h6">
+                {{ $total }}
+                {{get_system_default_currency()->symbol}}
+                ({{get_system_default_currency()->name}})
+            </h5>
+        </div>
+    </div>
     <div class="card-header row gutters-5">
         <div class="col text-center text-md-left">
             <h5 class="mb-md-0 h6">{{ translate('Commission History') }}</h5>

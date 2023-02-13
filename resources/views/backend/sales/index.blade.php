@@ -96,7 +96,8 @@
                             </div>
                         </td>
                         <td>
-                            {{ $order->code }}@if($order->viewed == 0) <span class="badge badge-inline badge-info">{{translate('New')}}</span>@endif
+                            {{ $order->code }}@if($order->viewed == 0) <span class="badge badge-inline badge-success">{{translate('New')}}</span>@endif
+                            @if($order->manual_payment == 1 && $order->manual_payment_data != null && $order->payment_status == 'Submitted') <span class="badge badge-inline badge-warning">{{translate('Paid')}}</span>@endif
                         </td>
                         <td>
                             {{ count($order->orderDetails) }}
