@@ -28,7 +28,7 @@
                     <div class="col">
                         <div class="text-center">
                             <i class="la-3x mb-2 opacity-50 las la-credit-card"></i>
-                            <h3 class="fs-14 fw-600 d-none d-lg-block opacity-50">{{ translate('4. Payment')}}</h3>
+                            <h3 class="fs-14 fw-600 d-none d-lg-block opacity-50">{{ translate('4. Order summary')}}</h3>
                         </div>
                     </div>
                     <div class="col">

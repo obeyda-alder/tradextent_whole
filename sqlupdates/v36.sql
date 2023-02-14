@@ -1450,6 +1450,7 @@ INSERT INTO `business_settings` (`type`, `value`, `created_at`, `updated_at`) VA
     (1383, 'en', 'You will able to pay when order status is confirmed.', 'You will able to pay when order status is confirmed.', '2020-11-17 06:59:11', '2020-11-17 06:59:11'),
     (1384, 'en', 'All wholesale products', 'All wholesale products', '2020-11-17 06:59:11', '2020-11-17 06:59:11'),
     (1385, 'en', 'All retail products', 'All retail products', '2020-11-17 06:59:11', '2020-11-17 06:59:11');
+    (1386, 'en', '4. Order summary', '4. Order summary', '2020-11-17 06:59:11', '2020-11-17 06:59:11');
 
 
     --
