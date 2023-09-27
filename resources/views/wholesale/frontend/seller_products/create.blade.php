@@ -124,7 +124,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product Videos')}}</h5>
                     </div>
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product price + stock')}}</h5>
@@ -565,8 +565,9 @@
                         </div>
                     </div>
                 </div>
+                <div id="tax-box"></div>
 
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
                     </div>
@@ -590,7 +591,7 @@
                         </div>
                         @endforeach
                     </div>
-                </div>
+                </div> --}}
 
             </div>
             <div class="col-12">
@@ -641,6 +642,25 @@
 
     });
 
+    function get_tax(cat_id){
+        $.ajax({
+                type:"get",
+                url:"{{url('/seller/products/get_tax/')}}"+"/"+cat_id,
+                success: function(data) {
+                    $('#tax-box').html(data);   
+           }
+       });
+    }
+
+    $( document ).ready(function() {
+        var cat_id = $('#category_id').val() 
+        get_tax(cat_id);
+
+    });
+    $('#category_id').on('change', function() {
+        var cat_id = $('#category_id').val() 
+        get_tax(cat_id);
+    });
 </script>
 
 @endsection

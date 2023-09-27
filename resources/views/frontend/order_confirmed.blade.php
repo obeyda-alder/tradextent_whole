@@ -175,7 +175,9 @@
                                                     <tr>
                                                         <th>{{ translate('Shipping')}}</th>
                                                         <td class="text-right">
-                                                            <span class="font-italic">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</span>
+                                                            <span class="font-italic text-danger">{{ translate('Shipping cost will be calculated upon confirmation of your order and informing you of it') }}.</span>
+
+                                                            {{-- <span class="font-italic">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</span> --}}
                                                         </td>
                                                     </tr>
                                                     <tr>

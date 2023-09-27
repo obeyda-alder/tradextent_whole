@@ -4,7 +4,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h1 class="h2 fs-16 mb-0">{{ translate('Order Details') }}</h1>
+            <h1 class="h2 fs-16 mb-0">{{ translate('Order Item Details') }}</h1>
         </div>
         <div class="card-body">
             <div class="row">
@@ -14,18 +14,32 @@
                             <tr class="bg-trans-dark">
                                 <th width="10%">{{ translate('Photo') }}</th>
                                 <th class="text-uppercase">{{ translate('Description') }}</th>
-                                <th data-breakpoints="lg" class="text-uppercase">{{ translate('Shipping Days') }}</th>
                                 <th data-breakpoints="lg" class="min-col text-uppercase text-center">
                                     {{ translate('Qty') }}
                                 </th>
                                 <th data-breakpoints="lg" class="min-col text-uppercase text-center">
-                                    {{ translate('Price') }}</th>
+                                    {{ translate('Unit Price') }}</th>
                                 <th data-breakpoints="lg" class="min-col text-uppercase text-center">
-                                    {{ translate('Total') }}</th>
-                                
+                                    {{ translate('Sub Total (tax/profit NOT included)') }}</th>
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Profit rate per piece') }}</th> 
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Profit value per piece') }}</th> 
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Total Profit') }}</th>
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Total Tax') }}</th>
+                                <th data-breakpoints="lg" class="min-col text-uppercase text-center">
+                                    {{ translate('Grand Total (tax/profit included)') }}</th> 
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                            // $product = App\Models\Product::find(14);
+                            //                     $profit= $product->taxes->where('tax_id',5)->first();
+                            //                     $profit?dd($profit->tax):dd(0);
+                                                // dd($profit->tax);
+                            @endphp
                                 <tr>
                                     <td>
                                         @if ($orderDetail->product != null && $orderDetail->product->auction_product == 0)
@@ -69,9 +83,7 @@
                                             <strong>{{ translate('Product Unavailable') }}</strong>
                                         @endif
                                     </td>
-                                    <td> 
-                                        {{$orderDetail->est_shipping_days}}
-                                    </td>
+                                    
                                     <td class="text-center">
                                         {{ $orderDetail->quantity }}
                                     </td>
@@ -81,6 +93,26 @@
                                     <td class="text-center">
                                         {{ single_price($orderDetail->price) }}
                                     </td>
+                                    <td class="text-center">
+                                        {{$orderDetail->profit}}%
+                                    </td>
+                                    <td class="text-center">
+                                        @php
+                                        $profit_val = ($orderDetail->price * $orderDetail->profit) / 100;
+                                        @endphp
+                                        {{single_price($profit_val / $orderDetail->quantity)}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{single_price($profit_val)}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{single_price($orderDetail->tax - $profit_val)}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ single_price($orderDetail->price + $orderDetail->tax) }}
+                                    </td>
+                                    
+                                    
                                 </tr>
                         </tbody>
                     </table>
@@ -126,10 +158,53 @@
         @endif
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0 h6">{{translate('Order Note')}}</h5>
+                <h5 class="mb-0 h6">{{translate('Edit Profit')}}</h5>
             </div>
-            <div class="card-body">
-                <form class="form form-horizontal mar-top" action="{{route('orders.add_order_admin')}}" method="POST">
+            <form class="form form-horizontal mar-top" action="{{route('orders.edit_order_profit')}}" method="POST">
+                <div class="card-body">
+                    @csrf
+                    <input type="hidden" class="form-control" name="order_detail_id" value={{$orderDetail->id}} required>
+                    <input type="hidden" class="form-control" name="order_id" value={{$order->id}} required>
+                    <div class="form-group row">
+                    <label class="col-md-3 col-from-label">{{translate('Current profit rate per piece')}}</label>
+                        <div class="form-group col-md-6">
+                            <input type="number" class="form-control" name="old_profit" value='{{$orderDetail->profit}}' placeholder="{{ translate('Profit value per piece') }}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="text" class="form-control" name="tax_type" value='Percent' placeholder="{{ translate('Percent') }}" readonly>
+                        </div>                        
+                </div>
+                @php
+                    $products = \App\Models\Product::where('wholesale_product', 1)->orderBy('created_at', 'desc')->get();
+                    @endphp
+                <div class="product-choose-list">
+                    <div class="product-choose">
+                        <div class="form-group row">
+                            <label class="col-lg-3 control-label" for="name">{{translate('New profit rate per piece')}}</label>
+                            <div class="form-group col-md-6">
+                                <input type="number" class="form-control" name="new_profit" placeholder="{{ translate('New profit rate per piece') }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <input type="text" class="form-control" name="tax_type" value='Percent' placeholder="{{ translate('Percent') }}" readonly>
+                            </div> 
+                        </div>
+                    </div>
+                </div>   
+            </div>
+            <div class="mar-all text-center mb-2">
+                <button class="btn btn-danger btn-md" title="{{ translate('Create new order') }}" type="submit">
+                    {{translate('Submit')}}
+                </button>
+            </div>
+        </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 h6">{{translate('Create Order')}}</h5>
+            </div>
+            <form class="form form-horizontal mar-top" action="{{route('orders.add_order_admin')}}" method="POST">
+                <div class="card-body">
                     @csrf
                     <input type="hidden" class="form-control" name="order_detail_id" value={{$orderDetail->id}} required>
                     <input type="hidden" class="form-control" name="order_id" value={{$order->id}} required>
@@ -141,7 +216,8 @@
                 </div>
                 @php
                     $products = \App\Models\Product::where('wholesale_product', 1)->orderBy('created_at', 'desc')->get();
-                @endphp
+                    @endphp
+                    {{-- {{dd($products[0]->user->name)}} --}}
                 <div class="product-choose-list">
                     <div class="product-choose">
                         <div class="form-group row">
@@ -149,7 +225,7 @@
                             <div class="col-lg-9">
                                 <select name="product_id" class="form-control product_id aiz-selectpicker" data-live-search="true" data-selected-text-format="count" required>
                                     @foreach($products as $key => $product)
-                                        <option value="{{$product->id}}">{{$product->getTranslation('name')}}</option>
+                                        <option value="{{$product->id}}">{{$product->getTranslation('name')}} -  {{$product->user->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -158,8 +234,8 @@
                 </div>   
             </div>
             <div class="mar-all text-center mb-2">
-                <button class="btn btn-danger btn-md" title="{{ translate('Add new order') }}" type="submit">
-                    {{translate('Add new order')}}
+                <button class="btn btn-danger btn-md" title="{{ translate('Create new order') }}" type="submit">
+                    {{translate('Submit')}}
                 </button>
             </div>
         </form>

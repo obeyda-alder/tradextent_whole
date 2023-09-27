@@ -277,6 +277,10 @@
                         <!--Submenu-->
                         @php
                             $newOrders =  \App\Models\Order::where('viewed' , 0)->count();
+                            $sellerOrdersres =  \App\Models\Order::where('delivery_status' , 'pending')->with('orderDetails')->whereHas('orderDetails', function ($query) {
+                                $query->where('seller_status', '!=', 'pending');
+                                })->count();
+
                             $subbmitedPayments =  \App\Models\Order::where('payment_status' , 'Submitted')->count();
                         @endphp
                         <ul class="aiz-side-nav-list level-2">
@@ -286,6 +290,7 @@
                                         <span class="aiz-side-nav-text">{{translate('All Orders')}}</span>
                                         @if($newOrders > 0)<span class="badge badge-success">{{ $newOrders }}</span> @endif
                                         @if($subbmitedPayments > 0)<span class="badge badge-warning">{{ $subbmitedPayments }}</span> @endif
+                                        @if($sellerOrdersres > 0)<span class="badge badge-info">{{ $sellerOrdersres }}</span> @endif
                                     </a>
                                 </li>
                             @endcan
@@ -489,13 +494,6 @@
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('withdraw_requests_all') }}" class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text">{{ translate('Payout Requests') }}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('seller_commission_configuration')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('business_settings.vendor_commission') }}" class="aiz-side-nav-link">
-                                        <span class="aiz-side-nav-text">{{ translate('Seller Commission') }}</span>
                                     </a>
                                 </li>
                             @endcan

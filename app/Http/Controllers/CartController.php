@@ -111,9 +111,12 @@ class CartController extends Controller
             if($product->wholesale_product){
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
                 $max_qty = $product_stock->wholesalePrices->max('max_qty');
-
+                $min_qty = $product_stock->wholesalePrices->min('min_qty');
+                
                 if($wholesalePrice){
                     $price = $wholesalePrice->price;
+                }elseif($request->quantity<$min_qty){
+                    $price = $product_stock->price;
                 }else{
                     $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
                     $price = $wholesalePrice->price;
@@ -350,9 +353,11 @@ class CartController extends Controller
             if($product->wholesale_product){
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
                 $max_qty = $product_stock->wholesalePrices->max('max_qty');
-
+                $min_qty = $product_stock->wholesalePrices->min('min_qty');
                 if($wholesalePrice){
                     $price = $wholesalePrice->price;
+                }elseif($request->quantity<$min_qty){
+                    $price = $product_stock->price;
                 }else{
                     $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
                     $price = $wholesalePrice->price;

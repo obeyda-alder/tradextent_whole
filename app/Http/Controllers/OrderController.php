@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\CombinedOrder;
 use App\Models\SmsTemplate;
 use Auth;
+use DB;
 use Mail;
 use App\Mail\InvoiceEmailManager;
 use App\Utility\NotificationUtility;
@@ -185,7 +186,7 @@ class OrderController extends Controller
             //Order Details Storing
             foreach ($seller_product as $cartItem) {
                 $product = Product::find($cartItem['product_id']);
-
+                $profit= $product->taxes->where('tax_id',5)->first();
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $tax +=  cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
                 $coupon_discount += $cartItem['discount'];
@@ -208,11 +209,13 @@ class OrderController extends Controller
                 $order_detail->product_id = $product->id;
                 $order_detail->variation = $product_variation;
                 $order_detail->est_shipping_days = $product->est_shipping_days;
+                $order_detail->profit = $profit?$profit->tax:0;
                 $order_detail->price = cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $order_detail->tax = cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
                 $order_detail->shipping_type = $cartItem['shipping_type'];
                 $order_detail->product_referral_code = $cartItem['product_referral_code'];
-                $order_detail->shipping_cost = $cartItem['shipping_cost'];
+                $order_detail->shipping_cost = 0; // To be assigned by admin later
+                $order_detail->est_shipping_days = $product->est_shipping_days;
 
                 $shipping += $order_detail->shipping_cost;
                 //End of storing shipping cost
@@ -358,6 +361,13 @@ class OrderController extends Controller
         $order = Order::findOrFail($request->order_id);
         $order->delivery_viewed = '0';
         $order->delivery_status = $request->status;
+        if ($request->status == 'confirmed'){
+            if($order->orderDetails->max('est_shipping_days') == null || $order->orderDetails->max('est_shipping_days') == 0 ){
+                $order->delivery_date = null;
+            }else{
+                $order->delivery_date = \Carbon\Carbon::now()->addDays($order->orderDetails->max('est_shipping_days'));
+            }
+        }
         $order->save();
 
         if ($request->status == 'cancelled' && $order->payment_type == 'wallet') {
@@ -472,6 +482,16 @@ class OrderController extends Controller
 
         return 1;
    }
+   public function update_order_shipping_cost(Request $request) {
+        $order = Order::findOrFail($request->order_id);
+        $order->preparation_days = $request->preparation_days;
+        $order->shipping_days = $request->shipping_days;
+        $order->order_shipping_cost = $request->order_shipping_cost;
+        $order->grand_total = ($order->grand_total - $request->old_cost) + $request->order_shipping_cost;
+        $order->save();
+        flash(translate('Updated successfully'))->success();
+        return redirect()->back();
+    }
 
     public function update_payment_status(Request $request)
     {
@@ -581,6 +601,7 @@ class OrderController extends Controller
     }
     public function add_order_admin(Request $request){
         // todo: Check if there is coupone and discount
+        
         $product = Product::find($request->product_id);
         $old_order = Order::find($request->order_id);
         $old_order_detail = OrderDetail::find($request->order_detail_id);
@@ -619,15 +640,17 @@ class OrderController extends Controller
         $tax +=  cart_product_tax($cartItem, $product,false) * $cartItem['quantity'];
         $product_variation = $cartItem['variation'];        
         // $coupon_discount += $cartItem['discount'];
-
+        
         $product_stock = $product->stocks->where('variant', $product_variation)->first();
-                
+        $profit= $product->taxes->where('tax_id',5)->first();
+
         $product_stock->qty -= $cartItem['quantity'];
         $product_stock->save();
         $order_detail = new OrderDetail;
         $order_detail->order_id = $order->id;
         $order_detail->seller_id = $product->user_id;
         $order_detail->product_id = $product->id;
+        $order_detail->profit = $profit?$profit->tax:0;
         $order_detail->variation = $product_variation;
         $order_detail->est_shipping_days = $product->est_shipping_days;
         $order_detail->price = cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
@@ -670,10 +693,65 @@ class OrderController extends Controller
         $order= Order::where('id', $orderDetail->order_id)->first();
         return view('backend.sales.edit_order', compact('orderDetail','order'));
     }
+    public function edit_order_profit(Request $request){
+    //   dd($request->all());
+            $orderDetail = OrderDetail::findOrFail($request->order_detail_id);
+            $order = Order::findOrFail($request->order_id);
+        
+            DB::beginTransaction();
+            try{
+                $old_profit_val = ($orderDetail->price * $orderDetail->profit) / 100;
+                $old_net_tax = $orderDetail->tax - $old_profit_val;
+                $new_profit_val = ($orderDetail->price * $request->new_profit) / 100;
+                $new_total_tax = $old_net_tax + $new_profit_val;
+                $orderDetail->tax = $new_total_tax;
+                $orderDetail->profit = $request->new_profit;
+                $orderDetail->save();
+                // dd($old_profit_val,$old_net_tax,$new_profit_val,$new_total_tax);
+                $tax=0;
+                $subtotal=0;
+                $shipping=0;
+                // Order grand total
+                $all_order_details = OrderDetail::where('order_id',$order->id)->get();
+                foreach($all_order_details as $order_detail){
+                    $subtotal += $order_detail->price;
+                    $tax += $order_detail->tax;
+                    // $shipping += $order_detail->shipping_cost;
+                }
+                $shipping=$order->order_shipping_cost;
+
+                $grand_total = $subtotal + $tax + $shipping;
+                $order->grand_total = $grand_total;
+                $order->delivery_status = 'pending';
+                $order->save();
+        
+                // Combined Order grand total
+                $combined_order = CombinedOrder::findOrFail($order->combined_order_id);
+                $all_combind_orders = Order::where('combined_order_id',$combined_order->id)->where('id','!=',$order->id)->get();
+                $combind_orders_grand_total = $grand_total;
+                foreach($all_combind_orders as $combind_orders){
+                    $combind_orders_grand_total += $combind_orders->grand_total;
+                }
+                $combined_order->grand_total = $combind_orders_grand_total;
+                $combined_order->save();
+                
+                // TODO: send notification to the customer and make order status edited 
+                NotificationUtility::sendNotification($order, 'edited');
+                DB::commit();
+                flash(translate('Order has been edited successfully'))->success();
+                return back();
+            }catch (\Exception $e){
+                DB::rollback();
+                flash(translate('Something went wrong'))->error();
+                return back();
+            }
+        
+    }
     public function confirm_edit_order($id){
         // todo: Check if there is coupone and discount
         $orderDetail = OrderDetail::findOrFail($id);
         $product = Product::findOrFail($orderDetail->product_id);
+        $profit= $product->taxes->where('tax_id',5)->first();
         $tax = 0;
         $price = $orderDetail->note_price;
         $quantity = $orderDetail->note_quantity;
@@ -696,6 +774,7 @@ class OrderController extends Controller
         $tax =  cart_product_tax($cartItem, $product,false,$price) * $quantity;
         $shipping = $orderDetail->shipping_cost;
         $orderDetail->tax = $tax;
+        $orderDetail->profit = $profit?$profit->tax:0;
         $orderDetail->price = $subtotal;
         $orderDetail->quantity = $quantity;
         $orderDetail->seller_status = 'accepted';
@@ -708,10 +787,12 @@ class OrderController extends Controller
         foreach($all_order_details as $order_detail){
             $subtotal += $order_detail->price;
             $tax += $order_detail->tax;
-            $shipping += $order_detail->shipping_cost;
+            // $shipping += $order_detail->shipping_cost;
         }
+        $shipping=$order->order_shipping_cost;
         $grand_total = $subtotal + $tax + $shipping;
         $order->grand_total = $grand_total;
+        $order->shipping_days = $orderDetail->note_shipping_dayes;
         $order->delivery_status = 'pending';
         $order->save();
 
@@ -730,6 +811,59 @@ class OrderController extends Controller
 
         flash(translate('Order has been edited successfully'))->success();
         return back();
+    }
+
+    public function delete_item_order($id){
+        // todo: Check if there is coupone and discount
+        $orderDetail = OrderDetail::findOrFail($id);
+        $order = Order::findOrFail($orderDetail->order_id);
+        if($order->orderDetails->count()>1){
+            DB::beginTransaction();
+            try{
+                $orderDetail->delete();
+                $tax=0;
+                $subtotal=0;
+                $shipping=0;
+                // Order grand total
+                $all_order_details = OrderDetail::where('order_id',$order->id)->get();
+                foreach($all_order_details as $order_detail){
+                    $subtotal += $order_detail->price;
+                    $tax += $order_detail->tax;
+                    // $shipping += $order_detail->shipping_cost;
+                }
+                $shipping=$order->order_shipping_cost;
+
+                $grand_total = $subtotal + $tax + $shipping;
+                $order->grand_total = $grand_total;
+                $order->delivery_status = 'pending';
+                $order->save();
+        
+                // Combined Order grand total
+                $combined_order = CombinedOrder::findOrFail($order->combined_order_id);
+                $all_combind_orders = Order::where('combined_order_id',$combined_order->id)->where('id','!=',$order->id)->get();
+                $combind_orders_grand_total = $grand_total;
+                foreach($all_combind_orders as $combind_orders){
+                    $combind_orders_grand_total += $combind_orders->grand_total;
+                }
+                $combined_order->grand_total = $combind_orders_grand_total;
+                $combined_order->save();
+                
+                // TODO: send notification to the customer and make order status edited 
+                NotificationUtility::sendNotification($order, 'edited');
+                DB::commit();
+                flash(translate('Order has been edited successfully'))->success();
+                return back();
+            }catch (\Exception $e){
+                DB::rollback();
+                flash(translate('Something went wrong'))->error();
+                return back();
+            }
+        }else{
+            flash(translate('Something went wrong'))->error();
+            return back();
+        }
+     
+       
     }
 
 }

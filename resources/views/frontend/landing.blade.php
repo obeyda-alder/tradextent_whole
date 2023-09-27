@@ -95,7 +95,7 @@
             width:unset;
             }
         }
-        
+
     </style>
 
 @if (get_setting('google_analytics') == 1)
@@ -129,14 +129,14 @@
             <img class="mb-2" src="{{ static_asset('assets/img/logo.png') }}" alt="{{ env('APP_NAME') }}" class="mw-100 h-30px h-md-40px" height="40">
         @endif
     </div>
-   <div class="col text-center" style="background-color:rgb(244, 244, 244);display:flex"> 
+   <div class="col text-center" style="background-color:rgb(244, 244, 244);display:flex">
     <div class="rounded card-cont" style="margin:auto 30px auto auto;background-color:var(--soft-primary);padding:2rem 1rem;width:18rem">
-        
+
         <h5 class="stylish-title">Retail</h5>
         <a class="btn btn-warning" href="{{ route('home-retail')}}">Start Shoping</a>
     </div>
     </div>
-   <div class="col text-center" style="background-color:var(--soft-primary);display:flex"> 
+   <div class="col text-center" style="background-color:var(--soft-primary);display:flex">
     <div class="rounded card-cont" style="margin:auto auto auto 30px;background-color:rgb(244, 244, 244);padding:2rem 1rem; width:18rem">
         <h5 class="stylish-title">Wholesale</h5>
         <a class="btn btn-warning" href="{{ route('home-wholesale')}}">Start Shoping</a>
@@ -145,7 +145,7 @@
     </div>
     <script>
         // document.location.reload();
-       
+
     </script>
 </body>
 </html>

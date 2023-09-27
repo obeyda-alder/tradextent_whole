@@ -168,7 +168,20 @@
                                                 <td>{{ 
                                                 $wholesalePrice->max_qty == $max_qty ? $wholesalePrice->max_qty .' =< ' :$wholesalePrice->max_qty
                                                 }}</td>
-                                                <td>{{ single_price($wholesalePrice->price) }}</td>
+                                                @php
+                                                    $tax=0;
+                                                    $price = $wholesalePrice->price;
+                                                    foreach ($detailedProduct->taxes as $product_tax) {
+                                                        if ($product_tax->tax_type == 'percent') {
+                                                            $tax += ($price * $product_tax->tax) / 100;
+                                                        } elseif ($product_tax->tax_type == 'amount') {
+                                                            $tax += $product_tax->tax;
+                                                        }
+                                                    }
+
+                                                    $price += $tax;
+                                                @endphp     
+                                                <td>{{ single_price($price) }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -799,7 +812,7 @@
                                                             {{ strip_tags($product_query->reply ? $product_query->reply : translate('Seller did not respond yet')) }}
                                                         </div>
                                                         <span class=" text-secondary">
-                                                            {{ $product_query->product->user->name }} </span>
+                                                            {{-- {{ $product_query->product->user->name }} </span> --}}
                                                     </div>
                                                 </div>
                                             </div>

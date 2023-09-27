@@ -124,7 +124,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product Videos')}}</h5>
                     </div>
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product price + stock')}}</h5>
@@ -565,8 +565,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="card">
+                <div id="tax-box"></div>
+                {{-- <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
                     </div>
@@ -595,7 +595,6 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <select class="form-control aiz-selectpicker" name="tax_type[]">
-                                    {{-- <option value="amount">{{translate('Flat')}}</option> --}}
                                     <option value="percent" selected>{{translate('Percent')}}</option>
                                 </select>
                             </div>
@@ -603,7 +602,7 @@
                         @endif
                         @endforeach
                     </div>
-                </div>
+                </div> --}}
 
             </div>
             <div class="col-12">
@@ -652,6 +651,26 @@
             $(".flat_rate_shipping_div").show();
         }
 
+    });
+
+    function get_tax(cat_id){
+        $.ajax({
+                type:"get",
+                url:"{{url('/admin/products/get_tax/')}}"+"/"+cat_id,
+                success: function(data) {
+                    $('#tax-box').html(data);   
+           }
+       });
+    }
+
+    $( document ).ready(function() {
+        var cat_id = $('#category_id').val() 
+        get_tax(cat_id);
+
+    });
+    $('#category_id').on('change', function() {
+        var cat_id = $('#category_id').val() 
+        get_tax(cat_id);
     });
 
 </script>

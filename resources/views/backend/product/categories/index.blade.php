@@ -44,8 +44,8 @@
                     <th data-breakpoints="lg">{{translate('Banner')}}</th>
                     <th data-breakpoints="lg">{{translate('Icon')}}</th>
                     <th data-breakpoints="lg">{{translate('Featured')}}</th>
-                    <th data-breakpoints="lg">{{translate('Commission')}}</th>
-                    <th width="10%" class="text-right">{{translate('Options')}}</th>
+                    {{-- <th data-breakpoints="lg">{{translate('Commission')}}</th> --}}
+                    <th width="13%" class="text-right">{{translate('Options')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,11 +87,14 @@
                                 <span></span>
                             </label>
                         </td>
-                        <td>{{ $category->commision_rate }} %</td>
+                        {{-- <td>{{ $category->commision_rate }} %</td> --}}
                         <td class="text-right">
                             @can('edit_product_category')
                                 <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('categories.edit', ['id'=>$category->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
                                     <i class="las la-edit"></i>
+                                </a>
+                                <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('categories.edit-tax', ['id'=>$category->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit TAX') }}">
+                                    <i class="las la-money-bill"></i>
                                 </a>
                             @endcan
                             @can('delete_product_category')

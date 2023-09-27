@@ -57,7 +57,7 @@ class HomeController extends Controller
         $todays_deal_products = Cache::rememberForever('todays_deal_products', function () {
             return filter_products(Product::where('published', 1)->where('todays_deal', '1')->where('wholesale_product', '1'))->get();
         });
-        
+
         $newest_products = Cache::remember('newest_products', 3600, function () {
             return filter_products(Product::where('wholesale_product', '1')->latest())->limit(12)->get();
         });
@@ -65,6 +65,7 @@ class HomeController extends Controller
 
     }
     public function index_retail(){
+        return view('frontend.comingsoon');
         Cache::forget('featured_products');
         Cache::forget('best_selling_products');
         Cache::forget('newest_products');
@@ -409,8 +410,11 @@ class HomeController extends Controller
         if ($product->wholesale_product) {
             $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $request->quantity)->where('max_qty', '>=', $request->quantity)->first();
             $max_qty = $product_stock->wholesalePrices->max('max_qty');
-            if ($wholesalePrice) {
+            $min_qty = $product_stock->wholesalePrices->min('min_qty');
+            if($wholesalePrice){
                 $price = $wholesalePrice->price;
+            }elseif($request->quantity<$min_qty){
+                $price = $product_stock->price;
             }else{
                 $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
                 $price = $wholesalePrice->price;
@@ -419,7 +423,7 @@ class HomeController extends Controller
 
         $quantity = $product_stock->qty;
         $max_limit = $product_stock->qty;
-        
+
         if ($product->wholesale_product) {
             $quantity = 1000000000;
             $max_limit = $quantity;
@@ -627,7 +631,7 @@ class HomeController extends Controller
 
     public function reset_password_with_code(Request $request)
     {
-        
+
         if (($user = User::where('email', $request->email)->where('verification_code', $request->code)->first()) != null) {
             if ($request->password == $request->password_confirmation) {
                 $user->password = Hash::make($request->password);

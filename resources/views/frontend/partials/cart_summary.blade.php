@@ -126,7 +126,8 @@
                 <tr class="cart-shipping">
                     <th>{{ translate('Total Shipping') }}</th>
                     <td class="text-right">
-                        <span class="font-italic">{{ single_price($shipping) }}</span>
+                        {{-- <span class="font-italic">{{ single_price($shipping) }}</span> --}}
+                        <span class="font-italic text-danger">{{ translate('Shipping cost will be calculated upon confirmation of your order and informing you of it') }}.</span>
                     </td>
                 </tr>
 

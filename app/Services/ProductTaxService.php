@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ProductTax;
+use App\Models\CategoryTax;
 
 class ProductTaxService
 {
@@ -18,6 +19,23 @@ class ProductTaxService
                 $product_tax->tax = $collection['tax'][$key];
                 $product_tax->tax_type = $collection['tax_type'][$key];
                 $product_tax->save();
+            }
+        }
+
+    }
+
+    public function storeCatTax(array $data)
+    {
+        $collection = collect($data);
+
+        if ($collection['tax_id']) {
+            foreach ($collection['tax_id'] as $key => $val) {
+                $category_tax = new CategoryTax();
+                $category_tax->tax_id = $val;
+                $category_tax->category_id = $collection['category_id'];
+                $category_tax->tax = $collection['tax'][$key];
+                $category_tax->tax_type = $collection['tax_type'][$key];
+                $category_tax->save();
             }
         }
 

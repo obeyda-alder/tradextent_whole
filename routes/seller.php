@@ -31,6 +31,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::post('/products/add-more-choice-option', 'add_more_choice_option')->name('products.add-more-choice-option');
         Route::post('/products/seller/featured', 'updateFeatured')->name('products.featured');
         Route::post('/products/published', 'updatePublished')->name('products.published');
+        Route::get('/products/get_tax/{cat_id}', 'get_tax')->name('products.get_tax');
         Route::get('/products/destroy/{id}', 'destroy')->name('products.destroy');
     });
 
@@ -67,6 +68,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     Route::resource('orders', OrderController::class);
     Route::controller(OrderController::class)->group(function () {
         Route::post('/orders/update_delivery_status', 'update_delivery_status')->name('orders.update_delivery_status');
+        Route::post('/orders/update_preparation_days', 'update_preparation_days')->name('orders.update_preparation_days');
         Route::post('/orders/update_payment_status', 'update_payment_status')->name('orders.update_payment_status');
         Route::post('/orders/update_seller_order_status', 'update_seller_order_status')->name('orders.update_seller_order_status');
         Route::get('/orders/product_edit/{id}', 'product_edit')->name('orders.product_edit');

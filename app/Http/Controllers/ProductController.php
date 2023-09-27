@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductTranslation;
 use App\Models\Category;
 use App\Models\ProductTax;
+use App\Models\CategoryTax;
 use App\Models\AttributeValue;
 use App\Models\Cart;
 use Carbon\Carbon;
@@ -482,6 +483,13 @@ class ProductController extends Controller
         }
         return 0;
     }
+
+    public function get_tax($cat_id)
+    {
+        $cat_taxs = CategoryTax::where('category_id',$cat_id)->get();
+        return view('backend.product.products.tax_box', compact('cat_taxs'));        
+    }
+
 
     public function sku_combination(Request $request)
     {

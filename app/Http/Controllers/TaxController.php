@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tax;
+use DB;
+use App\Models\CategoryTax;
+use App\Models\ProductTax;
 
 class TaxController extends Controller
 {
@@ -128,13 +131,31 @@ class TaxController extends Controller
             flash(translate('Can\'t be deleted!'))->error();
             return back();
         }
-        if(Tax::destroy($id)){
+        DB::beginTransaction();
+        try{
+            Tax::destroy($id);
+            $prod_taxs = ProductTax::where('tax_id',$id)->get();
+            $cat_taxs = CategoryTax::where('tax_id',$id)->get();
+            foreach($prod_taxs as $p_tax){
+                $p_tax->delete();
+            }
+            foreach($cat_taxs as $c_tax){
+                $c_tax->delete();
+            }
+            DB::commit();
             flash(translate('Tax has been deleted successfully'))->success();
             return redirect()->route('tax.index');
-        }
-        else{
+
+        }catch (\Exception $e) {
+            DB::rollback();
             flash(translate('Something went wrong'))->error();
             return back();
         }
+        // if(Tax::destroy($id)){
+        // }
+        // else{
+        //     flash(translate('Something went wrong'))->error();
+        //     return back();
+        // }
     }
 }

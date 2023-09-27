@@ -9,6 +9,7 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductTax;
+use App\Models\CategoryTax;
 use App\Models\ProductTranslation;
 use Carbon\Carbon;
 use Combinations;
@@ -175,6 +176,12 @@ class ProductController extends Controller
         Artisan::call('cache:clear');
 
         return back();
+    }
+
+    public function get_tax($cat_id)
+    {
+        $cat_taxs = CategoryTax::where('category_id',$cat_id)->get();
+        return view('backend.product.products.seller_tax_box', compact('cat_taxs'));        
     }
 
     public function sku_combination(Request $request)

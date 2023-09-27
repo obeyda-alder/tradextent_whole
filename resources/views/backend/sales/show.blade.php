@@ -7,9 +7,9 @@
             <h1 class="h2 fs-16 mb-0">{{ translate('Order Details') }}</h1>
         </div>
         <div class="card-body">
-            <div class="row gutters-5">
-                <div class="col text-md-left text-center">
-                </div>
+            <div class="row gutters-5 mb-4">
+                {{-- <div class="col text-md-left text-center">
+                </div> --}}
                 @php
                     $delivery_status = $order->delivery_status;
                     $payment_status = $order->payment_status;
@@ -67,6 +67,9 @@
                                 <option value="confirmed" @if ($delivery_status == 'confirmed') selected @endif>
                                     {{ translate('Confirmed') }}
                                 </option>
+                                <option value="preparing" @if ($delivery_status == 'preparing') selected @endif>
+                                    {{ translate('Preparing') }}
+                                </option>
                                 <option value="picked_up" @if ($delivery_status == 'picked_up') selected @endif>
                                     {{ translate('Picked Up') }}
                                 </option>
@@ -91,6 +94,52 @@
                         <input type="text" class="form-control" id="update_tracking_code"
                             value="{{ $order->tracking_code }}">
                     </div>
+
+                    <div class="col-md-3 ml-auto">
+                        <form action="{{route('orders.update_order_shipping_cost')}}" method="POST" id="days_form">
+                            @csrf
+                            <input type="hidden" class="form-control" id="" name="order_id"
+                                value="{{$order->id}}">
+                            <input type="hidden" class="form-control" id="" name="old_cost"
+                                value="{{ $order->order_shipping_cost }}">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <label for="update_preparation_days">
+                                        {{ translate('Preparation days') }}
+                                    </label>
+                                    <input type="text" class="form-control" id="update_preparation_days" name="preparation_days"
+                                        value="{{$order->preparation_days}}">
+                                </div>
+                                <div class="col-md-12 ml-auto mt-2">
+                                    <label for="update_shipping_days">
+                                        {{ translate('Shipping days') }} 
+                                    </label>
+                                    <input type="text" class="form-control" id="" name="shipping_days"
+                                        value="{{$order->shipping_days}}">
+                                </div>
+                                <div class="col-md-12 ml-auto mt-2">
+                                    <label for="update_order_shipping_cost">
+                                        {{ translate('Shipping cost') }}
+                                    </label>
+                                    <input type="text" class="form-control" id="update_order_shipping_cost" name="order_shipping_cost"
+                                        value="{{ $order->order_shipping_cost }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mar-all text-left mt-2">
+                                        <button type="submit" name="button"
+                                        class="btn btn-primary" onclick="submitDaysForm()">{{ translate('Save') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+
+
+
+
                 @endif
             </div>
             <div class="mb-3">
@@ -156,6 +205,20 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td class="text-main text-bold">{{ translate('Preparation days') }}: </td>
+                                <td class="text-right">
+                                @if( $order->preparation_days == null)
+                                <span class="badge badge-inline badge-danger">
+                                    {{ translate('Not defined yet') }}
+                                </span>
+                                @else
+                                <span class="badge badge-inline badge-success">
+                                    {{  $order->preparation_days }} {{ translate('days') }}
+                                </span>
+                                @endif
+                            </td>
+                            </tr>
+                            <tr>
                                 <td class="text-main text-bold">{{ translate('Order Date') }} </td>
                                 <td class="text-right">{{ date('d-m-Y h:i A', $order->date) }}</td>
                             </tr>
@@ -205,6 +268,9 @@
                         </thead>
                         <tbody>
                             @foreach ($order->orderDetails as $key => $orderDetail)
+                            {{-- @php
+                                dd($order->orderDetails[1]->product->taxes);
+                            @endphp --}}
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
@@ -294,15 +360,20 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        @if ($orderDetail->seller_status == 'accepted' || $orderDetail->seller_status == 'pending')
-                                        <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
+                                        {{-- @if ($orderDetail->seller_status == 'accepted' || $orderDetail->seller_status == 'pending') --}}
+                                        {{-- <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
                                             <i class="las la-edit"></i>
-                                        </a>
-                                        @else
+                                        </a> --}}
+                                        {{-- @else --}}
                                         <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('orders.edit_order', ['id'=>$orderDetail->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
                                             <i class="las la-edit"></i>
                                         </a>
+                                        @if($order->orderDetails->count()>1)
+                                        <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('orders.delete_item_order', ['id'=>$orderDetail->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
+                                            <i class="las la-trash"></i>
+                                        </a>
                                         @endif
+                                        {{-- @endif --}}
                                     </td>
                                 </tr>
                             @endforeach
@@ -334,7 +405,11 @@
                                 <strong class="text-muted">{{ translate('Shipping') }} :</strong>
                             </td>
                             <td>
-                                {{ single_price($order->orderDetails->sum('shipping_cost')) }}
+                                @if($order->order_shipping_cost != null)
+                                {{single_price($order->order_shipping_cost)}}
+                                @else
+                                ------
+                                @endif
                             </td>
                         </tr>
                         <tr>
@@ -353,6 +428,18 @@
                                 {{ single_price($order->grand_total) }}
                             </td>
                         </tr>
+                        {{-- <tr>
+                            <td>
+                                <strong class="text-muted">{{ translate('Shipping cost') }} :</strong>
+                            </td>
+                            <td class="text-muted h5">
+                                @if($order->order_shipping_cost != null)
+                                {{single_price($order->order_shipping_cost)}}
+                                @else
+                                ------
+                                @endif
+                            </td>
+                        </tr> --}}
                     </tbody>
                 </table>
                 <div class="no-print text-right">
@@ -411,5 +498,20 @@
                 AIZ.plugins.notify('success', '{{ translate('Order tracking code has been updated') }}');
             });
         });
+
+        // $('#update_order_shipping_cost').on('change', function() {
+        //     var order_id = {{ $order->id }};
+        //     var order_shipping_cost = $('#update_order_shipping_cost').val();
+        //     $.post('{{ route('orders.update_order_shipping_cost') }}', {
+        //         _token: '{{ @csrf_token() }}',
+        //         order_id: order_id,
+        //         order_shipping_cost: order_shipping_cost
+        //     }, function(data) {
+        //         AIZ.plugins.notify('success', '{{ translate('Order shipping cost has been updated') }}');
+        //     });
+        // });
+        function submitDaysForm() {
+        $("#days_form").submit();
+        }
     </script>
 @endsection

@@ -39,6 +39,35 @@
                                 {{ json_decode($order->shipping_address)->postal_code }},
                                 {{ json_decode($order->shipping_address)->country }}</td>
                         </tr>
+                        <tr>
+                            <td class="w-50 fw-600">{{ translate('Estimated delivery days') }}:</td>
+                            <td>                            
+                                @if( $order->shipping_days == null)
+                                <span class="badge badge-inline badge-danger">
+                                    {{ translate('Not defined yet') }}
+                                </span>
+                                @else
+                                <span class="badge badge-inline badge-success">
+                                    {{  $order->shipping_days }} {{ translate('days') }}
+                                </span>
+                                @endif
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-50 fw-600">{{ translate('Preparation days') }}:</td>
+                            <td>
+                                @if( $order->preparation_days == null)
+                                <span class="badge badge-inline badge-danger">
+                                    {{ translate('Not defined yet') }}
+                                </span>
+                                @else
+                                <span class="badge badge-inline badge-success">
+                                    {{  $order->preparation_days }} {{ translate('days') }}
+                                </span>
+                                @endif
+                            </td>
+                        </tr>
                     </table>
                 </div>
                 <div class="col-lg-6">
@@ -82,7 +111,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h5 class="h6 mb-0">{{ translate('Order Details') }}</h5>
@@ -92,7 +121,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th width="30%">{{ translate('Product') }}</th>
+                                <th >{{ translate('Product') }}</th>
+                                <th >{{ translate('Product') }}</th>
                                 <th data-breakpoints="md">{{ translate('Variation') }}</th>
                                 <th>{{ translate('Quantity') }}</th>
                                 <th data-breakpoints="md">{{ translate('Delivery Type') }}</th>
@@ -107,6 +137,9 @@
                             @foreach ($order->orderDetails as $key => $orderDetail)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
+                                    <td><span class="avatar avatar-md m-1" style="border-radius:10%;">
+                                        <img src={{ uploaded_asset($orderDetail->product->thumbnail_img) }} class="image" style="border-radius:10%">
+                                    </span></td>
                                     <td>
                                         @if ($orderDetail->product != null && $orderDetail->product->auction_product == 0)
                                             <a href="{{ route('product', $orderDetail->product->slug) }}"
@@ -183,7 +216,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <b class="fs-15">{{ translate('Order Ammount') }}</b>
@@ -201,8 +237,16 @@
                             <tr>
                                 <td class="w-50 fw-600">{{ translate('Shipping') }}</td>
                                 <td class="text-right">
+                                    @if($order->order_shipping_cost != null)
                                     <span
-                                        class="text-italic">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</span>
+                                        class="text-italic">{{single_price($order->order_shipping_cost)}}</span>
+                                    @else
+                                    <span
+                                        class="text-italic">------</span>
+                                    @endif
+
+                                    {{-- <span
+                                        class="text-italic">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</span> --}}
                                 </td>
                             </tr>
                             <tr>
@@ -226,12 +270,24 @@
                             </tr>
                         </tbody>
                     </table>
+                    @if($order->order_shipping_cost == null)
+                    <div class="text-italic text-danger pb-4">{{ translate('Shipping cost will be calculated upon confirmation of your order and informing you of it') }}.</div>
+                    @endif
                 </div>
             </div>
             @if ($order->manual_payment && $order->manual_payment_data == null && $order->delivery_status == 'confirmed')
                 <button onclick="show_make_payment_modal({{ $order->id }})"
                     class="btn btn-block btn-primary">{{ translate('Make Payment') }}</button>
             @endif
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">
+            <b class="fs-15">{{ translate('If you need support send us a') }} 
+                <a href="{{ route('support_ticket.index') }}">                    
+                    <span class="aiz-side-nav-text">{{ translate('Support Ticket') }}</span>
+                </a>
+            </b>
         </div>
     </div>
     @if ($order->manual_payment && $order->manual_payment_data == null && $order->delivery_status == 'pending')

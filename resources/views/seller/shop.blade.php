@@ -150,7 +150,7 @@
     @endif
 
     {{-- Banner Settings --}}
-    <div class="card">
+    {{-- <div class="card">
         <div class="card-header">
             <h5 class="mb-0 h6">{{ translate('Banner Settings') }}</h5>
         </div>
@@ -180,7 +180,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 
     {{-- Social Media Link --}}
     <div class="card">

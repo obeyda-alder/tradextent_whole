@@ -65,11 +65,7 @@
                                         {{ count($order->orderDetails->where('seller_id', Auth::user()->id)) }}
                                     </td>
                                     <td>
-                                        @if ($order->user_id != null)
-                                            {{ optional($order->user)->name }}
-                                        @else
-                                            {{ translate('Guest') }} ({{ $order->guest_id }})
-                                        @endif
+                                        Custumer
                                     </td>
                                     <td>
                                         {{ single_price($order->grand_total) }}

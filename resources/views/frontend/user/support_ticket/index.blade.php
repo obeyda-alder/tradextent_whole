@@ -84,10 +84,26 @@
                               <label>{{ translate('Subject')}}</label>
                           </div>
                           <div class="col-md-10">
-                              <input type="text" class="form-control mb-3" placeholder="{{ translate('Subject')}}" name="subject" required>
+                            <select class="form-control mb-3 aiz-selectpicker" id="ticket_subject" name="subject">
+                                <option value="{{ translate('Order') }}">
+                                    {{ translate('Order') }}
+                                </option>
+                                <option value="{{ translate('Shipping') }}">
+                                    {{ translate('Shipping') }}
+                                </option>
+                                <option value="{{ translate('Payment') }}">
+                                    {{ translate('Payment') }}
+                                </option>
+                                <option value="0">
+                                    {{ translate('Other') }}
+                                </option>
+                            </select>
                           </div>
                       </div>
 
+                      <div class="row" id="other_subject">
+                            
+                      </div>
                       <div class="row">
                           <div class="col-md-2">
                               <label>{{ translate('Provide a detailed description')}}</label>
@@ -119,4 +135,23 @@
             </div>
         </div>
     </div>
+@endsection
+@section('script')
+    <script type="text/javascript">
+        $('#ticket_subject').on('change', function() {
+            var ticket_subject = $('#ticket_subject').val();
+            if(ticket_subject == 0){
+                $('#other_subject').html(`
+                <div class="col-md-2">
+                    <label>{{ translate('Subject')}}</label>
+                </div>
+                <div class="col-md-10">
+                    <input type="text" class="form-control mb-3" placeholder="{{ translate('Subject')}}" name="subject" required>
+                </div>`);
+  
+            }else{
+                $('#other_subject').html(``);
+            }
+        });
+    </script>
 @endsection

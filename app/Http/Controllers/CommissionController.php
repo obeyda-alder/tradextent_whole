@@ -96,9 +96,14 @@ class CommissionController extends Controller
             foreach ($order->orderDetails as $orderDetail) {
                 $orderDetail->payment_status = 'paid';
                 $orderDetail->save();
-                // $commission_percentage = 0;
-                $commission_percentage = $orderDetail->product->taxes->where('tax_id',5)->first()->tax;
-                
+                $commission_percentage = 0;
+                // this $profit comes from orderdetails -> profit
+                // $profit = $orderDetail->product->taxes->where('tax_id',5)->first();
+                // if($profit){
+                    //     $commission_percentage = $profit->tax;
+                    // }
+                    
+                    $commission_percentage = $orderDetail->profit;
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
                         $commission_percentage += $orderDetail->product->category->commision_rate;
@@ -109,7 +114,8 @@ class CommissionController extends Controller
                 if ($orderDetail->product->user->user_type == 'seller') {
                     $seller = $orderDetail->product->user->shop;
                     $admin_commission = ($orderDetail->price * $commission_percentage) / 100;
-
+                    
+                    // dd($admin_commission);
                     if (get_setting('product_manage_by_admin') == 1) {
                         $seller_earning = ($orderDetail->tax + $orderDetail->price) - $admin_commission;
                         $seller->admin_to_pay += $seller_earning;
@@ -135,8 +141,13 @@ class CommissionController extends Controller
             foreach ($order->orderDetails as $orderDetail) {
                 $orderDetail->payment_status = 'paid';
                 $orderDetail->save();
-                // $commission_percentage = 0;
-                $commission_percentage = $orderDetail->product->taxes->where('tax_id',5)->first()->tax;
+                $commission_percentage = 0;
+                // $profit = $orderDetail->product->taxes->where('tax_id',5)->first();
+                // if($profit){
+                //     $commission_percentage = $profit->tax;
+                // }
+                $commission_percentage = $orderDetail->profit;
+
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
                         $commission_percentage += $orderDetail->product->category->commision_rate;

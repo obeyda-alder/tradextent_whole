@@ -53,12 +53,7 @@
                             <i class="las la-trash"></i>
                         </a>
                         @else
-                        <a class="btn btn-soft-secondary btn-icon btn-circle btn-sm disabled" href="#" title="{{ translate('Edit') }}">
-                            <i class="las la-edit"></i>
-                        </a>
-                        <a href="#" class="btn btn-soft-secondary btn-icon btn-circle btn-sm confirm-delete disabled" data-href="#" title="{{ translate('Delete') }}">
-                            <i class="las la-trash"></i>
-                        </a>
+                        ---
                         @endif
                     </td>
                 </tr>

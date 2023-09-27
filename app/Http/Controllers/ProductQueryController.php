@@ -21,8 +21,8 @@ class ProductQueryController extends Controller
      */
     public function index()
     {
-        $admin_id = User::where('user_type','admin')->first()->id;
-        $queries = ProductQuery::where('seller_id', $admin_id)->latest()->paginate(20);
+        // $admin_id = User::where('user_type','admin')->first()->id;
+        $queries = ProductQuery::latest()->paginate(20);
         return view('backend.support.product_query.index', compact('queries'));
     }
 
@@ -33,6 +33,21 @@ class ProductQueryController extends Controller
     {
         $query = ProductQuery::find(decrypt($id));
         return view('backend.support.product_query.show', compact('query'));
+    }
+    public function delete($id)
+    {
+        $query = ProductQuery::findOrFail(decrypt($id));
+
+        if (ProductQuery::destroy($query->id)) {
+
+            flash(translate('Deleted successfully'))->success();
+
+            return back();
+        } else {
+            flash(translate('Something went wrong'))->error();
+            return back();
+        }
+
     }
 
     /**

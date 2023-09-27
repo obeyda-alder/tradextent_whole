@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Under Construction</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 100px;
+            background-color: #f8f8f8;
+        }
+        h1 {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Under Construction</h1>
+    <p>Visit us later to explore more content.</p>
+    <hr>
+    <h1>&#304;n&#351;a Halinde</h1>
+    <p>Daha fazla içeri&#287;i ke&#351;fetmek için bizi sonra ziyaret ediniz.</p>
+</body>
+</html>

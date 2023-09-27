@@ -189,7 +189,7 @@ if (!function_exists('format_price')) {
         }
 
 
-        // Minimize the price 
+        // Minimize the price
         if ($isMinimize) {
             $temp = number_format($price / 1000000000, get_setting('no_of_decimals'), ".", "");
 
@@ -253,9 +253,13 @@ if (!function_exists('cart_product_price')) {
             if ($product->wholesale_product) {
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
                 $max_qty = $product_stock->wholesalePrices->max('max_qty');
+                $min_qty = $product_stock->wholesalePrices->min('min_qty');
                 if ($wholesalePrice) {
                     $price = $wholesalePrice->price;
-                }else{
+                }elseif($cart_product['quantity']<$min_qty){
+                    $price = $product_stock->price;
+                }
+                else{
                     $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
                     $price = $wholesalePrice->price;
                 }
@@ -287,7 +291,7 @@ if (!function_exists('cart_product_price')) {
             $price = $product->bids->max('amount');
         }
 
-        //calculation of taxes 
+        //calculation of taxes
         if ($tax) {
             $taxAmount = 0;
             foreach ($product->taxes as $product_tax) {
@@ -318,6 +322,22 @@ if (!function_exists('cart_product_tax')) {
         $product_stock = $product->stocks->where('variant', $str)->first();
         $price = $product_stock->price;
 
+        // NOTE: wholesale_product
+        if ($product->wholesale_product) {
+            $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
+            $max_qty = $product_stock->wholesalePrices->max('max_qty');
+            $min_qty = $product_stock->wholesalePrices->min('min_qty');
+            if ($wholesalePrice) {
+                $price = $wholesalePrice->price;
+            }elseif($cart_product['quantity']<$min_qty){
+                $price = $product_stock->price;
+            }
+            else{
+                $wholesalePrice = $product_stock->wholesalePrices->where('max_qty', '=', $max_qty)->first();
+                $price = $wholesalePrice->price;
+            }
+        }
+
         //discount calculation
         $discount_applicable = false;
 
@@ -340,7 +360,7 @@ if (!function_exists('cart_product_tax')) {
             }
         }
 
-        //calculation of taxes 
+        //calculation of taxes
         $tax = 0;
         foreach ($product->taxes as $product_tax) {
             if ($product_tax->tax_type == 'percent') {
@@ -983,7 +1003,7 @@ if (!function_exists('my_asset')) {
         if (env('FILESYSTEM_DRIVER') == 's3') {
             return Storage::disk('s3')->url($path);
         } else {
-            return app('url')->asset('public/' . $path, $secure);
+            return app('url')->asset($path, $secure); //'public/' .
         }
     }
 }
@@ -998,7 +1018,7 @@ if (!function_exists('static_asset')) {
      */
     function static_asset($path, $secure = null)
     {
-        return app('url')->asset('public/' . $path, $secure);
+        return app('url')->asset($path, $secure); //'public/' .
     }
 }
 

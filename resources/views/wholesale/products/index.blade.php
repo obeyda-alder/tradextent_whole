@@ -96,7 +96,7 @@
                 </thead>
                 <tbody>
                     @foreach($products as $key => $product)
-                    <tr>
+                    <tr style="{{$product->approved == 0 ? 'background-color:var(--soft-danger)' :""}}">
                         <!--<td>{{ ($key+1) + ($products->currentPage() - 1)*$products->perPage() }}</td>-->
                         <td>
                             <div class="form-group d-inline-block">

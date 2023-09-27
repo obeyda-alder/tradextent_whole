@@ -149,6 +149,17 @@ class OrderController extends Controller
         return 1;
     }
 
+    // Update Order preparation days from seller
+    public function update_preparation_days(Request $request)
+    {
+        $order = Order::findOrFail($request->order_id);
+        $order->preparation_days = $request->preparation_days;
+        $order->shipping_days = $request->shipping_days;
+        $order->save();
+        flash(translate('Updated successfully'))->success();
+        return redirect()->back();
+    }
+
     // Show order product edit 
     public function product_edit($id){
         $orderDetail = OrderDetail::findOrFail($id);

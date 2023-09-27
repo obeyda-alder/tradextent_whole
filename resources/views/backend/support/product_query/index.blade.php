@@ -38,6 +38,11 @@
                                     title="{{ translate('View') }}">
                                     <i class="las la-eye"></i>
                                 </a>
+                                <a class="btn btn-soft-primary btn-icon btn-circle btn-sm"
+                                    href="{{ route('product_query.delete', encrypt($query->id)) }}"
+                                    title="{{ translate('Delete') }}">
+                                    <i class="las la-trash"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach

@@ -55,6 +55,36 @@
                 @endif
             </div>
             <div class="row gutters-5 mt-2">
+                <form action="{{route('seller.orders.update_preparation_days')}}" method="POST" id="days_form">
+                    @csrf
+                    <input type="hidden" class="form-control" id="" name="order_id"
+                        value="{{$order->id}}">
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="update_preparation_days">
+                                {{ translate('Preparation days') }}
+                            </label>
+                            <input type="text" class="form-control" id="update_preparation_days" name="preparation_days"
+                                value="{{$order->preparation_days}}">
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <label for="update_shipping_days">
+                                {{ translate('Shipping days') }} 
+                    
+                            </label>
+                            <input type="text" class="form-control" id="" name="shipping_days"
+                                value="{{$order->shipping_days}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mar-all text-left mt-2">
+                                <button type="submit" name="button"
+                                class="btn btn-primary" onclick="submitDaysForm()">{{ translate('Save') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="col text-md-left text-center">
                     {{-- @if(json_decode($order->shipping_address))
                         <address>
@@ -246,7 +276,12 @@
                                 <strong class="text-muted">{{ translate('Shipping') }} :</strong>
                             </td>
                             <td>
-                                {{ single_price($order->orderDetails->sum('shipping_cost')) }}
+                                @if($order->order_shipping_cost != null)
+                                {{single_price($order->order_shipping_cost)}}
+                                @else
+                                ------
+                                @endif
+                                {{-- {{ single_price($order->orderDetails->sum('shipping_cost')) }} --}}
                             </td>
                         </tr>
                         <tr>
@@ -307,5 +342,21 @@
                 location.reload().setTimeOut(500);
             });
         });
+
+        // $('#update_preparation_days').on('change', function() {
+        //     var order_id = {{ $order->id }};
+        //     var preparation_days = $('#update_preparation_days').val();
+        //     $.post('{{ route('seller.orders.update_preparation_days') }}', {
+        //         _token: '{{ @csrf_token() }}',
+        //         order_id: order_id,
+        //         preparation_days: preparation_days
+        //     }, function(data) {
+        //         AIZ.plugins.notify('success', '{{ translate('Order shipping cost has been updated') }}');
+        //     });
+        // });
+
+        function submitDaysForm() {
+        $("#days_form").submit();
+        }
     </script>
 @endsection

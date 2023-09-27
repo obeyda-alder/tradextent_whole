@@ -87,12 +87,42 @@
 
         </div>
     </div>
+    <!-- delete Modal -->
+<div id="accepted-modal" class="modal fade">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title h6">{{translate('Accept Confirmation')}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mt-1">{{translate('Are you sure to accept this order, you can not undo this?')}}</p>
+                <button type="button" class="btn btn-link mt-2" data-dismiss="modal">{{translate('Cancel')}}</button>
+                <button onclick="updateconfirmed()" id="delete-link" class="btn btn-primary mt-2">{{translate('Accept')}}</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+<div id="cancelled-modal" class="modal fade">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title h6">{{translate('Cancel Confirmation')}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mt-1">{{translate('Are you sure to cancel this order, you can not undo this?')}}</p>
+                <button type="button" class="btn btn-link mt-2" data-dismiss="modal">{{translate('No')}}</button>
+                <button onclick="updateconfirmed()" id="delete-link" class="btn btn-primary mt-2">{{translate('Yes I am sure')}}</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
 @endsection
 
 @section('script')
     <script type="text/javascript">
-
-        $('#update_seller_order_status').on('change', function() {
+        function updateconfirmed(){
             var order_id = {{ $orderDetail->id }};
             var status = $('#update_seller_order_status').val();
             $.post('{{ route('seller.orders.update_seller_order_status') }}', {
@@ -104,6 +134,27 @@
                 AIZ.plugins.notify('success', '{{ translate('Order status has been updated') }}');
                 location.reload().setTimeOut(500);
             });
+        };
+
+        $('#update_seller_order_status').on('change', function() {
+            var order_id = {{ $orderDetail->id }};
+            var status = $('#update_seller_order_status').val();
+            if(status == "accepted"){
+                $("#accepted-modal").modal("show"); 
+            }
+            else if(status == "cancelled"){
+                $("#cancelled-modal").modal("show"); 
+            }else{
+                $.post('{{ route('seller.orders.update_seller_order_status') }}', {
+                    _token: '{{ @csrf_token() }}',
+                    order_id: order_id,
+                    status: status
+                }, function(data) {
+                    console.log(data);
+                    AIZ.plugins.notify('success', '{{ translate('Order status has been updated') }}');
+                    location.reload().setTimeOut(500);
+                });
+            };
         });
     </script>
 @endsection

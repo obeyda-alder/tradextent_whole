@@ -16,6 +16,10 @@
                             @endif
                             <h1 class="h3 text-primary mb-0">{{ translate('Welcome to') }} {{ env('APP_NAME') }}</h1>
                             <p>{{ translate('Login to your account.') }}</p>
+
+                            {{-- @php
+                                dd('asd');
+                            @endphp --}}
                         </div>
                         <form class="pad-hor" method="POST" role="form" action="{{ route('login') }}">
                             @csrf

@@ -25,7 +25,7 @@
                     <div class="form-group row">
                         <label class="col-md-3 col-form-label">{{translate('Parent Category')}}</label>
                         <div class="col-md-9">
-                            <select class="select2 form-control aiz-selectpicker" name="parent_id" data-toggle="select2" data-placeholder="Choose ..." data-live-search="true">
+                            <select class="select2 form-control aiz-selectpicker" name="parent_id" data-toggle="select2" data-placeholder="Choose ..." data-live-search="true" id="parent_id">
                                 <option value="0">{{ translate('No Parent') }}</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
@@ -95,7 +95,7 @@
                             <textarea name="meta_description" rows="5" class="form-control"></textarea>
                         </div>
                     </div>
-                    @if (get_setting('category_wise_commission') == 1)
+                    {{-- @if (get_setting('category_wise_commission') == 1)
                         <div class="form-group row">
                             <label class="col-md-3 col-form-label">{{translate('Commission Rate')}}</label>
                             <div class="col-md-9 input-group">
@@ -105,7 +105,12 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
+
+
+                        
+
+
                     <div class="form-group row">
                         <label class="col-md-3 col-form-label">{{translate('Filtering Attributes')}}</label>
                         <div class="col-md-9">
@@ -114,6 +119,43 @@
                                     <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                    <div class="card shadow-none" id="vat-tax">
+                        <div class="card-header">
+                            <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach(\App\Models\Tax::where('tax_status', 1)->get() as $tax)
+                            <label for="name">
+                                {{$tax->name}}
+                                <input type="hidden" value="{{$tax->id}}" name="tax_id[]">
+                            </label>
+                            @if($tax->id != 5)
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                        <option value="amount">{{translate('Flat')}}</option>
+                                        <option value="percent">{{translate('Percent')}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            @else
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                        <option value="percent" selected>{{translate('Percent')}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            @endif
+                            @endforeach
                         </div>
                     </div>
                     <div class="form-group mb-0 text-right">
@@ -126,3 +168,21 @@
 </div>
 
 @endsection
+
+{{-- @section('script')
+
+<script type="text/javascript">
+    $('#parent_id').on('change', function() {
+        console.log( $(this).val());
+        if($(this).val() !== 0){
+            $('#vat-tax').addClass("d-none");
+        }
+        if($(this).val() == 0){
+            console.log('else');
+            $('#vat-tax').removeClass("d-none");
+        }
+    });
+
+</script>
+
+@endsection --}}

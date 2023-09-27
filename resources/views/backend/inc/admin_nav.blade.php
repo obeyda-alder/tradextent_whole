@@ -64,21 +64,30 @@
                                         <div class="media text-inherit">
                                             <div class="media-body">
                                                 @if($notification->type == 'App\Notifications\OrderNotification')
+                                                <a href="{{route('all_orders.show', encrypt($notification->data['order_id']))}}">
                                                     <p class="mb-1 text-truncate-2">
                                                         {{translate('Order code: ')}} {{$notification->data['order_code']}} {{ translate('has been '. ucfirst(str_replace('_', ' ', $notification->data['status'])))}}
                                                     </p>
                                                     <small class="text-muted">
                                                         {{ date("F j Y, g:i a", strtotime($notification->created_at)) }}
                                                     </small>
+                                                </a>
+
+                                                    
                                                 @endif
                                                 @if($notification->type == 'App\Notifications\SellerConfirmNotification')
+
+                                                <a href="{{route('sellers.show_verification_request', $notification->data['shop_id'])}}">
                                                     <p class="mb-1 text-truncate-2">
-                                                        {{-- TODO: add translate --}}
                                                         {{translate('New Shop verfication request!')}}
                                                     </p>
                                                     <small class="text-muted">
                                                         {{ date("F j Y, g:i a", strtotime($notification->created_at)) }}
                                                     </small>
+                                                </a>
+
+
+                                                    
                                                 @endif
                                             </div>
                                         </div>

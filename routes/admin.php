@@ -71,6 +71,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::controller(CategoryController::class)->group(function () {
         Route::get('/categories/edit/{id}', 'edit')->name('categories.edit');
         Route::get('/categories/destroy/{id}', 'destroy')->name('categories.destroy');
+        Route::get('/categories/edit-tax/{id}', 'edit_tax')->name('categories.edit-tax');
+        Route::post('/categories/update-tax/{id}', 'update_tax')->name('categories.update-tax');
         Route::post('/categories/featured', 'updateFeatured')->name('categories.featured');
     });
     
@@ -101,6 +103,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
         Route::post('/bulk-product-delete', 'bulk_product_delete')->name('bulk-product-delete');
     
         Route::post('/products/sku_combination', 'sku_combination')->name('products.sku_combination');
+        Route::get('/products/get_tax/{cat_id}', 'get_tax')->name('products.get_tax');
         Route::post('/products/sku_combination_edit', 'sku_combination_edit')->name('products.sku_combination_edit');
         Route::post('/products/add-more-choice-option', 'add_more_choice_option')->name('products.add-more-choice-option');
     });
@@ -327,11 +330,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
         Route::post('/orders/update_delivery_status', 'update_delivery_status')->name('orders.update_delivery_status');
         Route::post('/orders/update_payment_status', 'update_payment_status')->name('orders.update_payment_status');
         Route::post('/orders/update_tracking_code', 'update_tracking_code')->name('orders.update_tracking_code');
+        Route::post('/orders/update_order_shipping_cost', 'update_order_shipping_cost')->name('orders.update_order_shipping_cost');
         
         //Edit order
         Route::get('/orders/edit-order/{id}', 'edit_order')->name('orders.edit_order');
         Route::get('/orders/confirm-edit-order/{id}', 'confirm_edit_order')->name('orders.confirm_edit_order');
+        Route::get('/orders/delete-order/{id}', 'delete_item_order')->name('orders.delete_item_order');
         Route::post('/orders/add-order-admin', 'add_order_admin')->name('orders.add_order_admin');
+        Route::post('/orders/edit-order-profit', 'edit_order_profit')->name('orders.edit_order_profit');
+
 
         //Delivery Boy Assign
         Route::post('/orders/delivery-boy-assign', 'assign_delivery_boy')->name('orders.delivery-boy-assign');
@@ -402,6 +409,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::controller(ProductQueryController::class)->group(function () {
         Route::get('/product-queries', 'index')->name('product_query.index');
         Route::get('/product-queries/{id}', 'show')->name('product_query.show');
+        Route::get('/product-queries/delete/{id}', 'delete')->name('product_query.delete');
         Route::put('/product-queries/{id}', 'reply')->name('product_query.reply');
     });
 

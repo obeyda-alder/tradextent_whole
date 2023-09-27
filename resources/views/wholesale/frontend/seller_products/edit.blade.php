@@ -131,7 +131,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product Videos')}}</h5>
                     </div>
@@ -139,11 +139,7 @@
                         <div class="form-group row">
                             <label class="col-lg-3 col-from-label">{{translate('Video Provider')}}</label>
                             <div class="col-lg-8">
-                                <select class="form-control aiz-selectpicker" name="video_provider" id="video_provider">
-                                    <option value="youtube" <?php if ($product->video_provider == 'youtube') echo "selected"; ?> >{{translate('Youtube')}}</option>
-                                    <option value="dailymotion" <?php if ($product->video_provider == 'dailymotion') echo "selected"; ?> >{{translate('Dailymotion')}}</option>
-                                    <option value="vimeo" <?php if ($product->video_provider == 'vimeo') echo "selected"; ?> >{{translate('Vimeo')}}</option>
-                                </select>
+                              
                             </div>
                         </div>
                         <div class="form-group row">
@@ -153,7 +149,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('Product price + stock')}}</h5>
@@ -588,45 +584,62 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
-                    </div>
-                    <div class="card-body">
-                        @foreach(\App\Models\Tax::where('tax_status', 1)->where('id','!=', 5)->get() as $tax)
-                        <label for="name">
-                            {{$tax->name}}
-                            <input type="hidden" value="{{$tax->id}}" name="tax_id[]">
-                        </label>
-
-                        @php
-                        $tax_amount = 0;
-                        $tax_type = '';
-                        foreach($tax->product_taxes as $row) {
-                            if($product->id == $row->product_id) {
-                                $tax_amount = $row->tax;
-                                $tax_type = $row->tax_type;
-                            }
-                        }
-                        @endphp
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <input type="number" lang="en" min="0" value="{{ $tax_amount }}" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <select class="form-control aiz-selectpicker" name="tax_type[]">
-                                    <option value="amount" @if($tax_type == 'amount') selected @endif>
-                                        {{translate('Flat')}}
-                                    </option>
-                                    <option value="percent" @if($tax_type == 'percent') selected @endif>
-                                        {{translate('Percent')}}
-                                    </option>
-                                </select>
-                            </div>
+                <div id="tax-box">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0 h6">{{translate('VAT & Tax')}}</h5>
                         </div>
-                        @endforeach
+                        <div class="card-body">
+                            @foreach(\App\Models\Tax::where('tax_status', 1)->get() as $tax)
+                            <input type="hidden" value="{{$tax->id}}" name="tax_id[]">
+                           
+    
+                            @php
+                            $tax_amount = 0;
+                            $tax_type = '';
+                            foreach($tax->product_taxes as $row) {
+                                if($product->id == $row->product_id) {
+                                    $tax_amount = $row->tax;
+                                    $tax_type = $row->tax_type;
+                                }
+                            }
+                            @endphp
+                            @if($tax->id != 5)
+                            <label for="name">
+                                {{$tax->name}}
+                            </label>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <input type="number" lang="en" min="0" value="{{ $tax_amount }}" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                        <option value="amount" @if($tax_type == 'amount') selected @endif>
+                                            {{translate('Flat')}}
+                                        </option>
+                                        <option value="percent" @if($tax_type == 'percent') selected @endif>
+                                            {{translate('Percent')}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            @else
+                            <div class="form-row d-none">
+                                <div class="form-group col-md-6">
+                                    <input type="number" lang="en" min="0" value="{{ $tax_amount }}" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                        <option value="percent" selected>{{translate('Percent')}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            @endif
+
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
@@ -671,6 +684,20 @@
 
     AIZ.plugins.tagify();
 
+    function get_tax(cat_id){
+        $.ajax({
+                type:"get",
+                url:"{{url('/seller/products/get_tax/')}}"+"/"+cat_id,
+                success: function(data) {
+                    $('#tax-box').html(data);   
+           }
+       });
+    }
+
+    $('#category_id').on('change', function() {
+        var cat_id = $('#category_id').val() 
+        get_tax(cat_id);
+    });
 </script>
 
 @endsection

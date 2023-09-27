@@ -196,7 +196,14 @@
 							        </tr>
 							        <tr>
 							            <th class="gry-color text-left">{{ translate('Shipping Cost') }}</th>
-							            <td class="currency">{{ single_price($order->orderDetails->sum('shipping_cost')) }}</td>
+							            <td class="currency">
+											@if($order->order_shipping_cost != null)
+											{{single_price($order->order_shipping_cost)}}
+											@else
+											------
+											@endif
+											{{-- {{ single_price($order->orderDetails->sum('shipping_cost')) }} --}}
+										</td>
 							        </tr>
 							        <tr class="border-bottom">
 							            <th class="gry-color text-left">{{ translate('Total Tax') }}</th>

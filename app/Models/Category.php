@@ -22,6 +22,10 @@ class Category extends Model
     public function products(){
     	return $this->hasMany(Product::class);
     }
+    public function taxes()
+    {
+        return $this->hasMany(CategoryTax::class);
+    }
 
     public function classified_products(){
     	return $this->hasMany(CustomerProduct::class);

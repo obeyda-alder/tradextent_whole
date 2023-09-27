@@ -202,12 +202,19 @@
                 @endif
 
                 @if (get_setting('product_query_activation') == 1)
+                @php
+                    $queries = \App\Models\ProductQuery::where('seller_id', Auth::user()->id)
+                        ->where('reply', null)
+                        ->get();
+                @endphp
                     <li class="aiz-side-nav-item">
                         <a href="{{ route('seller.product_query.index') }}"
                             class="aiz-side-nav-link {{ areActiveRoutes(['seller.product_query.index']) }}">
                             <i class="las la-question-circle aiz-side-nav-icon"></i>
                             <span class="aiz-side-nav-text">{{ translate('Product Queries') }}</span>
-
+                            @if (count($queries) > 0)
+                                <span class="badge badge-success">({{ count($queries) }})</span>
+                             @endif
                         </a>
                     </li>
                 @endif

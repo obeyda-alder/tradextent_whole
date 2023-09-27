@@ -17,7 +17,7 @@ class AdminController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function admin_dashboard(Request $request)
-    {   
+    {
         CoreComponentRepository::initializeCache();
         $root_categories = Category::where('level', 0)->get();
 

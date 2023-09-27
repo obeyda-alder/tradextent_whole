@@ -272,7 +272,7 @@ class LoginController extends Controller
             if (session('link') != null) {
                 return redirect(session('link'));
             } else {
-                return redirect()->route('dashboard');
+                return redirect()->route('home-wholesale');
             }
         }
     }
@@ -328,11 +328,11 @@ class LoginController extends Controller
         // if (auth()->user()->provider) {
         //     $social_revoke =  new SocialRevoke;
         //     $revoke_output = $social_revoke->apply(auth()->user()->provider);
-            
+
         //     if ($revoke_output) {
         //     }
         // }
-        
+
         $auth_user = auth()->user();
         $auth_user->customer_products()->delete();
 
